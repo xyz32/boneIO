@@ -1,5 +1,6 @@
 import json, tables
 
+export tables.`[]`
 var pinData* = newTable[string, JsonNode]()
 
 let
