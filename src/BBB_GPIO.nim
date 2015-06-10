@@ -9,7 +9,7 @@ let
   value_file = "value"
 
 proc pinMode(pin: string): bool =
-  var file = open(sys_gpio_path + exp_file, fmWrite)
+  var file = open(sys_gpio_path & exp_file, fmWrite)
   file.close()
 #end
 
@@ -21,4 +21,4 @@ when isMainModule:
   assert(BBB_Pins.getPinData("P8_3")["key"].str == "P8_3")
 #end
 
-echo (BBB_Pins.pinData["P8_3"])
+echo (BBB_Pins.getPinData("bla"))

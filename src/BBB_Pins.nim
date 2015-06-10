@@ -1534,7 +1534,12 @@ for i in 0..(PinIndex.len - 1):
 #end
 
 proc getPinData* (key: string): JsonNode =
-  return pinData[key]
+  ## Return the definition of the respective pin key
+  if pinData.hasKey(key):
+    return pinData[key]
+  else:
+    raise newException(EInvalidValue, "Key not found: '" & key &"'")
+  #end
 #end
 
 when isMainModule:
