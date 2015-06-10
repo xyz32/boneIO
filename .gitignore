@@ -1,1 +1,11 @@
 nimcache/
+
+BBB_GPIO
+BBB_Pins
+
+# .kdev4/
+# *.kdev4
+
+# Swap Files #
+.*.kate-swp
+.swp.*
