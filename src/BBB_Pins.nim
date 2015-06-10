@@ -1530,7 +1530,12 @@ let
 
 for i in 0..(PinIndex.len - 1):
   pinData.add(PinIndex[i]["key"].str, PinIndex[i])
+#end
 
 proc getPinData* (key: string): JsonNode =
   return pinData[key]
+#end
+
+when isMainModule:
+  assert(getPinData("P9_46")["key"] == "P9_46")
 #end

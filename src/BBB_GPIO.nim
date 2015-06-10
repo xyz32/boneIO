@@ -1,6 +1,12 @@
 import BBB_Pins, json
 
-echo (BBB_Pins.getPinData("P8_3")["gpio"])
+let
+  path = ""
 
-# when isMainModule:
-#   hello()
+proc initGPIO*(): bool =
+  discard
+#end
+
+when isMainModule:
+  assert(BBB_Pins.getPinData("P8_3")["key"].str == "P8_3")
+#end
