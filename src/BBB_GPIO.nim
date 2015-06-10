@@ -19,6 +19,9 @@ proc initGPIO*(): bool =
 
 when isMainModule:
   assert(BBB_Pins.getPinData("P8_3")["key"].str == "P8_3")
+  try:
+    assert(BBB_Pins.getPinData("bla")["key"].str == "bla")
+  except ValueError:
+    assert (true)
+  #end
 #end
-
-echo (BBB_Pins.getPinData("bla"))
