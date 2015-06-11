@@ -10,6 +10,7 @@ let
 
 proc pinMode(pin: string): bool =
   var file = open(sys_gpio_path & exp_file, fmWrite)
+  
   file.close()
 #end
 
@@ -21,7 +22,7 @@ proc initGPIO*(): bool =
 when isMainModule:
   assert(BBB_Pins.getPinData("P8_3")["key"].str == "P8_3")
   try:
-    assert(BBB_Pins.getPinData("bla")["key"].str == "bla")
+    discard BBB_Pins.getPinData("bla")["key"].str
   except ValueError:
     assert (true)
   #end
