@@ -2,15 +2,15 @@ import BBB_Pins, json, os
 
 # BBB filesystem mapping
 let
-  sys_gpio_path = "/sys/class/gpio/"
-  exp_file = "export"
-  direction_file = "direction"
-  edge_file = "edge"
-  value_file = "value"
+  sys_gpio_path = r"/sys/class/gpio/"
+  exp_file = r"export"
+  direction_file = r"direction"
+  edge_file = r"edge"
+  value_file = r"value"
 
 proc pinMode(pin: string): bool =
   var file = open(sys_gpio_path & exp_file, fmWrite)
-  
+
   file.close()
 #end
 
@@ -26,4 +26,8 @@ when isMainModule:
   except ValueError:
     assert (true)
   #end
+
+  assert ($BBB_Pins.getPinData("P9_42", "eeprom") == "4")
+
+  repr (BBB_Pins.getPinData("P9_42", "eeprom"))
 #end

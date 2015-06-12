@@ -1534,12 +1534,18 @@ for i in 0..(PinIndex.len - 1):
   pinData.add(PinIndex[i]["key"].str, PinIndex[i])
 #end
 
-proc getPinData* (key: string): JsonNode =
+proc getPinData* (key: string, subkey: string = ""): JsonNode =
   ## Return the definition of the respective pin key
   if pinData.hasKey(key):
-    return pinData[key]
+    if subkey.len == 0:
+      return pinData[key]
+    elif pinData[key].hasKey(subkey):
+      return pinData[key][subkey]
+    else:
+      raise newException(EInvalidValue, "Subkey not found: key='" & key & "' subkey= '" & subkey & "'")
+    #end
   else:
-    raise newException(EInvalidValue, "Key not found: '" & key &"'")
+    raise newException(EInvalidValue, "Key not found: '" & key & "'")
   #end
 #end
 
