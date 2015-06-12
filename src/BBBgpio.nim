@@ -7,7 +7,7 @@ type
   Digital* = enum
     High = "1", Low = "0"
 
-  Pullup* = enum
+  PullupMode* = enum
     Pullup = "pullup", Pulldown = "pulldown", Disabled = "disabled"
 
 # BBB filesystem mapping
@@ -32,7 +32,7 @@ proc setPinDirection(pinGpio: string, direction: Direction) =
   file.close()
 #end
 
-proc pinMode*(pin: string, direction: Direction) =
+proc pinMode* (pin: string, direction: Direction) =
   ## Set the pin mod
   var pinGpio = $BBBpinlayout.getPinData(pin, "gpio");
 
@@ -40,7 +40,7 @@ proc pinMode*(pin: string, direction: Direction) =
   setPinDirection(pinGpio, direction)
 #end
 
-proc digitalWrite(pin: string, value: Digital) =
+proc digitalWrite* (pin: string, value: Digital) =
   discard
 
 # Testing
