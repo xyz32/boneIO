@@ -1542,10 +1542,10 @@ proc getPinData* (key: string, subkey: string = ""): JsonNode =
     elif pinData[key].hasKey(subkey):
       return pinData[key][subkey]
     else:
-      raise newException(EInvalidValue, "Subkey not found: key='" & key & "' subkey= '" & subkey & "'")
+      raise newException(ValueError, "Subkey not found: key='" & key & "' subkey= '" & subkey & "'")
     #end
   else:
-    raise newException(EInvalidValue, "Key not found: '" & key & "'")
+    raise newException(ValueError, "Key not found: '" & key & "'")
   #end
 #end
 
