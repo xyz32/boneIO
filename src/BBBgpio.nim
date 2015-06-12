@@ -1,16 +1,23 @@
 import BBBpinlayout, json, os
 
 type
+  ## Pin direction, in or out
   Direction* = enum
     In = "in", Out = "out"
 
+  ## Logic level output
   Digital* = enum
     High = "1", Low = "0"
 
+  ## Pullup resistor
   PullupMode* = enum
     Pullup = "pullup", Pulldown = "pulldown", Disabled = "disabled"
 
-# BBB filesystem mapping
+  ## The rate of change of output voltage per unit of time
+  Slew* = enum
+    Fast = "fast", Slow = "slow"
+
+# BBB filesystem mapping based on the dafault device tree
 let
   sys_gpio_path = r"/sys/class/gpio/"
   exp_file = r"export"
@@ -32,7 +39,7 @@ proc setPinDirection(pinGpio: string, direction: Direction) =
   file.close()
 #end
 
-proc pinMode* (pin: string, direction: Direction) =
+proc pinMode* (pin: string, direction: Direction, pullup: PullupMode = PullupMode.Pullup) =
   ## Set the pin mod
   var pinGpio = $BBBpinlayout.getPinData(pin, "gpio");
 
