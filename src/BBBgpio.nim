@@ -2,13 +2,13 @@ import BBBpinlayout, json, os
 
 type
   Direction* = enum
-    In, Out
+    In = "in", Out = "out"
 
   Digital* = enum
     High = "1", Low = "0"
 
   Pullup* = enum
-    pullup, pulldown, disabled
+    Pullup = "pullup", Pulldown = "pulldown", Disabled = "disabled"
 
 # BBB filesystem mapping
 let
