@@ -10,7 +10,7 @@ type
     High = "1", Low = "0"
 
   ## Pullup resistor
-  PullupMode* = enum
+  PullUpDown* = enum
     Pullup = "pullup", Pulldown = "pulldown", Disabled = "disabled"
 
   ## The rate of change of output voltage per unit of time
@@ -22,8 +22,7 @@ const
   exp_file = "/sys/class/gpio/export"
   unexp_file = "/sys/class/gpio/unexport"
   direction_file = "/sys/class/gpio/gpio$1/direction"
-  edge_file = "edge"
-  value_file = "value"
+  value_file = "/sys/class/gpio/gpio$1/value"
   
 proc writeFile(file, pinGpio, value: string) =
   var tFile = open(file, fmWrite)
@@ -46,7 +45,7 @@ proc setPinDirection(pinGpio: string, direction: Direction) =
   writeFile(fileName, pinGpio, $direction)
 #end
 
-proc pinMode* (pin: string, direction: Direction, pullup: PullupMode = PullupMode.Pullup) =
+proc pinMode* (pin: string, direction: Direction, pullup: PullUpDown = PullUpDown.Pullup, slew: Slew = Slew.Fast) =
   ## Set the pin mod
   let pinGpio = $bone.getPinData(pin, "gpio");
   
@@ -55,21 +54,19 @@ proc pinMode* (pin: string, direction: Direction, pullup: PullupMode = PullupMod
 #end
 
 proc pinModeReset* (pin: string) =
-  ## Set the pin mod
+  ## Reset the pin mode
   let pinGpio = $bone.getPinData(pin, "gpio");
   
   exportPin(pinGpio, false)
 #end
 
 proc digitalWrite* (pin: string, value: Digital) =
-  discard
+  let pinGpio = $bone.getPinData(pin, "gpio");
+  let fileName = value_file % [pinGpio]
+  writeFile(fileName, $value)
 #end
 
 # Testing
-
-#let pinGpio = bone.getPinData("USR0", "gpio");
-#echo repr(pinGpio)
-
 when isMainModule:
   assert(bone.getPinData("P8_3")["key"].str == "P8_3")
   try:
@@ -86,6 +83,5 @@ when isMainModule:
     assert (true)
 
   pinMode("P8_6", Direction.Out)
-  pinModeReset("P8_6")
   #end
 #end
