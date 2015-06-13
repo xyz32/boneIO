@@ -19,10 +19,12 @@ type
 
 # BBB filesystem mapping based on the dafault device tree
 const
-  exp_file = "/sys/class/gpio/export"
-  unexp_file = "/sys/class/gpio/unexport"
+  expFile = "/sys/class/gpio/export"
+  unexpFile = "/sys/class/gpio/unexport"
   direction_file = "/sys/class/gpio/gpio$1/direction"
-  value_file = "/sys/class/gpio/gpio$1/value"
+  gpioValueFile = "/sys/class/gpio/gpio$1/value"
+  ledTriggerFile = "/sys/class/leds/beaglebone:green:$1/trigger"
+  ledBrightnessFile = "/sys/class/leds/beaglebone:green:$1/brightness"
   
 proc writeFile(file, pinGpio, value: string) =
   var tFile = open(file, fmWrite)
@@ -33,9 +35,9 @@ proc writeFile(file, pinGpio, value: string) =
 proc exportPin (pinGpio: string, enable: bool = true) =
   ## Helper method to export the pins
   if enable:
-    writeFile(exp_file, pinGpio, pinGpio)
+    writeFile(expFile, pinGpio, pinGpio)
   else:
-    writeFile(unexp_file, pinGpio, pinGpio)
+    writeFile(unexpFile, pinGpio, pinGpio)
   #end
 #end
 
@@ -47,10 +49,16 @@ proc setPinDirection(pinGpio: string, direction: Direction) =
 
 proc pinMode* (pin: string, direction: Direction, pullup: PullUpDown = PullUpDown.Pullup, slew: Slew = Slew.Fast) =
   ## Set the pin mod
-  let pinGpio = $bone.getPinData(pin, "gpio");
   
-  exportPin(pinGpio)
-  setPinDirection(pinGpio, direction)
+  # LEDs need to be treated differently
+  if bone.pinHasData(pin, "led"):
+    let pinLed = $bone.getPinData(pin, "led").str
+    writeFile(ledTriggerFile % [pinLed], "gpio")
+  else:
+    let pinGpio = $bone.getPinData(pin, "gpio");
+    exportPin(pinGpio)
+    setPinDirection(pinGpio, direction)
+  #end
 #end
 
 proc pinModeReset* (pin: string) =
@@ -60,10 +68,15 @@ proc pinModeReset* (pin: string) =
   exportPin(pinGpio, false)
 #end
 
-proc digitalWrite* (pin: string, value: Digital) =
-  let pinGpio = $bone.getPinData(pin, "gpio");
-  let fileName = value_file % [pinGpio]
-  writeFile(fileName, $value)
+proc digitalWrite* (pin: string, value: byte) =
+  if bone.pinHasData(pin, "led"):
+    let pinLed = $bone.getPinData(pin, "led").str
+    writeFile(ledBrightnessFile % [pinLed], $value)
+  else:
+    let pinGpio = $bone.getPinData(pin, "gpio");
+    let fileName = gpioValueFile % [pinGpio]
+    writeFile(fileName, $value)
+  #end
 #end
 
 # Testing
@@ -81,7 +94,17 @@ when isMainModule:
     discard bone.getPinData("P9_46", "gpio")
   except ValueError:
     assert (true)
+  #end
 
-  pinMode("P8_6", Direction.Out)
+  #pinMode("P8_6", Direction.Out)
+  
+  pinMode("USR0", Direction.Out)
+  pinMode("USR1", Direction.Out)
+  pinMode("USR2", Direction.Out)
+  pinMode("USR3", Direction.Out)
+  
+  for i in 0..100:
+    digitalWrite("USR" & $(i mod 4), byte((i + 1) mod 2))
+    sleep(100)
   #end
 #end

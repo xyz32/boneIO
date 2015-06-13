@@ -1554,6 +1554,15 @@ proc getPinData* (pin: string, subkey: string = ""): JsonNode =
   #end
 #end
 
+proc pinHasData* (pin: string, subkey: string): bool =
+  ## Checks if a particular pin has extra information
+  if pinData.hasKey(pin) or loadPin(pin):
+      return pinData[pin].hasKey(subkey)
+  else:
+    raise newException(ValueError, "Key not found: '" & pin & "'")
+  #end
+#end
+
 when isMainModule:
   assert(getPinData("P9_46")["key"] == "P9_46")
 #end
