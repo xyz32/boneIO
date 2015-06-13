@@ -1,4 +1,4 @@
-import BBBpinlayout, json, os
+import bone, json, os
 
 type
   ## Pin direction, in or out
@@ -41,7 +41,7 @@ proc setPinDirection(pinGpio: string, direction: Direction) =
 
 proc pinMode* (pin: string, direction: Direction, pullup: PullupMode = PullupMode.Pullup) =
   ## Set the pin mod
-  var pinGpio = $BBBpinlayout.getPinData(pin, "gpio");
+  var pinGpio = $bone.getPinData(pin, "gpio");
 
   exportPin(pinGpio)
   setPinDirection(pinGpio, direction)
@@ -52,17 +52,17 @@ proc digitalWrite* (pin: string, value: Digital) =
 
 # Testing
 when isMainModule:
-  assert(BBBpinlayout.getPinData("P8_3")["key"].str == "P8_3")
+  assert(bone.getPinData("P8_3")["key"].str == "P8_3")
   try:
-    discard BBBpinlayout.getPinData("bla")["key"].str
+    discard bone.getPinData("bla")["key"].str
   except ValueError:
     assert (true)
   #end
 
-  assert ($BBBpinlayout.getPinData("P9_42", "eeprom") == "4")
+  assert ($bone.getPinData("P9_42", "eeprom") == "4")
 
   try:
-    discard BBBpinlayout.getPinData("P9_46", "gpio")
+    discard bone.getPinData("P9_46", "gpio")
   except ValueError:
     assert (true)
 
