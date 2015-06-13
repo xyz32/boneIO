@@ -1,7 +1,6 @@
 nimcache/
 
-BBB_GPIO
-BBB_Pins
+bonegpio
 
 # .kdev4/
 # *.kdev4

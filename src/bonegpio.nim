@@ -1,4 +1,4 @@
-import bone, json, os
+import bone, json, os, strutils
 
 type
   ## Pin direction, in or out
@@ -18,37 +18,40 @@ type
     Fast = "fast", Slow = "slow"
 
 # BBB filesystem mapping based on the dafault device tree
-let
-  sys_gpio_path = r"/sys/class/gpio/"
-  exp_file = r"export"
-  direction_file = r"direction"
-  edge_file = r"edge"
-  value_file = r"value"
-
+const
+  exp_file = "/sys/class/gpio/export"
+  direction_file = "/sys/class/gpio/gpio$1/direction"
+  edge_file = "edge"
+  value_file = "value"
+  
+proc writeFile(file, pinGpio, value: string) =
+  var tFile = open(file, fmWrite)
+  tFile.writeln(value)
+  tFile.close()
+#end
+  
 proc exportPin (pinGpio: string) =
   ## Helper method to export the pins
-  var file = open(sys_gpio_path & exp_file, fmWrite)
-  file.writeln(pinGpio)
-  file.close()
+  writeFile(exp_file, pinGpio, pinGpio)
 #end
 
 proc setPinDirection(pinGpio: string, direction: Direction) =
   ## Helper method to set the pin direction
-  var file = open(sys_gpio_path & "gpio" & pinGpio & "/" & direction_file, fmWrite)
-  file.writeln(direction)
-  file.close()
+  let fileName = direction_file % [pinGpio]
+  writeFile(fileName, pinGpio, $direction)
 #end
 
 proc pinMode* (pin: string, direction: Direction, pullup: PullupMode = PullupMode.Pullup) =
   ## Set the pin mod
-  var pinGpio = $bone.getPinData(pin, "gpio");
-
+  let pinGpio = $bone.getPinData(pin, "gpio");
+  
   exportPin(pinGpio)
   setPinDirection(pinGpio, direction)
 #end
 
 proc digitalWrite* (pin: string, value: Digital) =
   discard
+#end
 
 # Testing
 when isMainModule:
@@ -66,6 +69,6 @@ when isMainModule:
   except ValueError:
     assert (true)
 
-  pinMode("P8_6", Direction.Out)
+  # pinMode("P8_6", Direction.Out)
   #end
 #end
