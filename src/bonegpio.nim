@@ -20,6 +20,7 @@ type
 # BBB filesystem mapping based on the dafault device tree
 const
   exp_file = "/sys/class/gpio/export"
+  unexp_file = "/sys/class/gpio/unexport"
   direction_file = "/sys/class/gpio/gpio$1/direction"
   edge_file = "edge"
   value_file = "value"
@@ -30,9 +31,13 @@ proc writeFile(file, pinGpio, value: string) =
   tFile.close()
 #end
   
-proc exportPin (pinGpio: string) =
+proc exportPin (pinGpio: string, enable: bool = true) =
   ## Helper method to export the pins
-  writeFile(exp_file, pinGpio, pinGpio)
+  if enable:
+    writeFile(exp_file, pinGpio, pinGpio)
+  else:
+    writeFile(unexp_file, pinGpio, pinGpio)
+  #end
 #end
 
 proc setPinDirection(pinGpio: string, direction: Direction) =
@@ -49,11 +54,22 @@ proc pinMode* (pin: string, direction: Direction, pullup: PullupMode = PullupMod
   setPinDirection(pinGpio, direction)
 #end
 
+proc pinModeReset* (pin: string) =
+  ## Set the pin mod
+  let pinGpio = $bone.getPinData(pin, "gpio");
+  
+  exportPin(pinGpio, false)
+#end
+
 proc digitalWrite* (pin: string, value: Digital) =
   discard
 #end
 
 # Testing
+
+#let pinGpio = bone.getPinData("USR0", "gpio");
+#echo repr(pinGpio)
+
 when isMainModule:
   assert(bone.getPinData("P8_3")["key"].str == "P8_3")
   try:
@@ -69,6 +85,7 @@ when isMainModule:
   except ValueError:
     assert (true)
 
-  # pinMode("P8_6", Direction.Out)
+  pinMode("P8_6", Direction.Out)
+  pinModeReset("P8_6")
   #end
 #end

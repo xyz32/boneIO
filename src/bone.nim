@@ -1528,21 +1528,29 @@ let
         }
       ]
      
-for i in 0..(PinIndex.len - 1):
-  pinData.add(PinIndex[i]["key"].str, PinIndex[i])
+proc loadPin(pin: string): bool =
+  ## Only load pin data when the pin is accessed
+  for i in 0..(PinIndex.len - 1):
+    if PinIndex[i]["key"].str == pin:
+      pinData.add(PinIndex[i]["key"].str, PinIndex[i])
+      return true
+    #end
+  #end
+  return false
+#end
 
-proc getPinData* (key: string, subkey: string = ""): JsonNode =
+proc getPinData* (pin: string, subkey: string = ""): JsonNode =
   ## Return the definition of the respective pin key
-  if pinData.hasKey(key):
+  if pinData.hasKey(pin) or loadPin(pin):
     if subkey.len == 0:
-      return pinData[key]
-    elif pinData[key].hasKey(subkey):
-      return pinData[key][subkey]
+      return pinData[pin]
+    elif pinData[pin].hasKey(subkey):
+      return pinData[pin][subkey]
     else:
-      raise newException(ValueError, "Subkey not found: key='" & key & "' subkey= '" & subkey & "'")
+      raise newException(ValueError, "Subkey not found: key='" & pin & "' subkey= '" & subkey & "'")
     #end
   else:
-    raise newException(ValueError, "Key not found: '" & key & "'")
+    raise newException(ValueError, "Key not found: '" & pin & "'")
   #end
 #end
 
