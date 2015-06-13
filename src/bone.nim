@@ -1,5 +1,7 @@
 import json, tables
 
+var pinData = newTable[string, JsonNode]()
+
 let
   # Use the compile tyme JSon to Nim object converter
   # This information has been copyed form the bonescript.js project
@@ -1525,12 +1527,9 @@ let
             "key": "P9_46"
         }
       ]
-proc initPind(): Table[string, JsonNode] = 
-  for i in 0..(PinIndex.len - 1):
-    result.add(PinIndex[i]["key"].str, PinIndex[i])
-#end
-
-let pinData = initPind()
+     
+for i in 0..(PinIndex.len - 1):
+  pinData.add(PinIndex[i]["key"].str, PinIndex[i])
 
 proc getPinData* (key: string, subkey: string = ""): JsonNode =
   ## Return the definition of the respective pin key
