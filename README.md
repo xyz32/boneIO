@@ -21,6 +21,6 @@ Run the ```nimble build``` command.
 
 # TODO
 Left to be done:
-[*] GPIO
-[ ] PWM
-[ ] I2P
+- [X] GPIO
+- [ ] PWM
+- [ ] I2P
