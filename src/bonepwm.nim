@@ -17,8 +17,10 @@ proc startPWM* (pin: string) =
   #end
 #end
 
-proc setPWM* (pin: string, duty: int32, period: int32) =
-  discard
+proc setPWM* (pin: string, duty: int32, period: int32 = 20000000) =
+  var dutyNs = period * (duty/100)
+  writeFile(pwmPeriodFile % [pin], period)
+  writeFile(pwmDutyFile % [pin], dutyNs)
 #end
 
 when isMainModule:
