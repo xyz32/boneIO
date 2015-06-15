@@ -32,6 +32,12 @@ proc writeFile(file, value: string) =
   tFile.close()
 #end
 
+proc readFile(file: string): string =
+  var tFile = open(file, fmWrite)
+  result = tFile.readline()
+  tFile.close()
+#end
+
 proc exportPin (pinGpio: string, enable: bool = true) =
   ## Helper method to export the pins
   if enable:
@@ -74,8 +80,17 @@ proc digitalWrite* (pin: string, value: Digital) =
     writeFile(ledBrightnessFile % [pinLed], $value)
   else:
     let pinGpio = $bone.getPinData(pin, "gpio");
-    let fileName = gpioValueFile % [pinGpio]
-    writeFile(fileName, $value)
+    writeFile(gpioValueFile % [pinGpio], $value)
+  #end
+#end
+
+proc digitalRead* (pin: string): int8 =
+  if bone.pinHasData(pin, "led"):
+    let pinLed = $bone.getPinData(pin, "led").str
+    result = int8(parseInt(readFile(ledBrightnessFile % [pinLed])))
+  else:
+    let pinGpio = $bone.getPinData(pin, "gpio");
+    result = int8(parseInt(readFile(gpioValueFile % [pinGpio])))
   #end
 #end
 
