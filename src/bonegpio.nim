@@ -25,31 +25,31 @@ const
   gpioValueFile = "/sys/class/gpio/gpio$1/value"
   ledTriggerFile = "/sys/class/leds/beaglebone:green:$1/trigger"
   ledBrightnessFile = "/sys/class/leds/beaglebone:green:$1/brightness"
-  
-proc writeFile(file, pinGpio, value: string) =
+
+proc writeFile(file, value: string) =
   var tFile = open(file, fmWrite)
   tFile.writeln(value)
   tFile.close()
 #end
-  
+
 proc exportPin (pinGpio: string, enable: bool = true) =
   ## Helper method to export the pins
   if enable:
-    writeFile(expFile, pinGpio, pinGpio)
+    writeFile(expFile, pinGpio)
   else:
-    writeFile(unexpFile, pinGpio, pinGpio)
+    writeFile(unexpFile, pinGpio)
   #end
 #end
 
 proc setPinDirection(pinGpio: string, direction: Direction) =
   ## Helper method to set the pin direction
   let fileName = direction_file % [pinGpio]
-  writeFile(fileName, pinGpio, $direction)
+  writeFile(fileName, $direction)
 #end
 
 proc pinMode* (pin: string, direction: Direction, pullup: PullUpDown = PullUpDown.Pullup, slew: Slew = Slew.Fast) =
   ## Set the pin mod
-  
+
   # LEDs need to be treated differently
   if bone.pinHasData(pin, "led"):
     let pinLed = $bone.getPinData(pin, "led").str
@@ -64,7 +64,7 @@ proc pinMode* (pin: string, direction: Direction, pullup: PullUpDown = PullUpDow
 proc pinModeReset* (pin: string) =
   ## Reset the pin mode
   let pinGpio = $bone.getPinData(pin, "gpio");
-  
+
   exportPin(pinGpio, false)
 #end
 
@@ -98,7 +98,7 @@ when isMainModule:
 
   #pinMode("P8_6", Direction.Out)
   pinMode("P9_14", Direction.Out)
-  
+
   pinMode("USR0", Direction.Out)
   for i in 0..100:
     digitalWrite("USR0", Digital(i mod 2))
