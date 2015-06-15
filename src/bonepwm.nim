@@ -23,5 +23,6 @@ proc setPWM* (pin: string, duty: int32, period: int32 = 20000000) =
   writeFile(pwmDutyFile % [pin], dutyNs)
 #end
 
+# Testing
 when isMainModule:
   discard
