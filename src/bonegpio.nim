@@ -74,7 +74,7 @@ proc pinModeReset* (pin: string) =
   exportPin(pinGpio, false)
 #end
 
-proc digitalWrite* (pin: string, value: Digital) =
+proc digitalWrite* (pin: string, value: int8) =
   if bone.pinHasData(pin, "led"):
     let pinLed = $bone.getPinData(pin, "led").str
     writeFile(ledBrightnessFile % [pinLed], $value)
@@ -116,7 +116,7 @@ when isMainModule:
 
   pinMode("USR0", Direction.Out)
   for i in 0..100:
-    digitalWrite("USR0", Digital(i mod 2))
+    digitalWrite("USR0", i mod 2)
     sleep(100)
   #end
 #end
