@@ -18,6 +18,9 @@ proc startPWM* (pin: string) =
 #end
 
 proc setPWM* (pin: string, duty: int32, period: int32 = 20000000) =
+  if duty < 0 || duty > 100:
+    raise newException(ValueError, "Duty is a percentage [0..100]")
+
   var dutyNs = period * (duty/100)
   writeFile(pwmPeriodFile % [pin], period)
   writeFile(pwmDutyFile % [pin], dutyNs)
