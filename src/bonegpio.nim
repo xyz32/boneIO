@@ -69,7 +69,7 @@ proc pinMode* (pin: string, direction: Direction, pullup: PullUpDown = PullUpDow
 
 proc pinModeReset* (pin: string) =
   ## Reset the pin mode
-  
+
   exportPin($bone.getPinData(pin).gpio, false)
 #end
 
@@ -118,7 +118,7 @@ when isMainModule:
   for i in 0..100:
     digitalWrite("USR0", i mod 2)
     sleep(100)
-    
+
   pinModeReset("USR0")
   #end
 #end
