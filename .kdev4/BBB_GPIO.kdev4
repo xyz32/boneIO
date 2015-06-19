@@ -1,6 +1,48 @@
 [Buildset]
 BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\x10\x00B\x00B\x00B\x00_\x00G\x00P\x00I\x00O)
 
+[CustomBuildSystem]
+CurrentConfiguration=BuildConfig0
+
+[CustomBuildSystem][BuildConfig0]
+BuildDir=
+Title=Release
+
+[CustomBuildSystem][BuildConfig0][ToolBuild]
+Arguments=build
+Enabled=true
+Environment=
+Executable=nimble
+Type=0
+
+[CustomBuildSystem][BuildConfig0][ToolClean]
+Arguments=
+Enabled=false
+Environment=
+Executable=
+Type=3
+
+[CustomBuildSystem][BuildConfig0][ToolConfigure]
+Arguments=init
+Enabled=true
+Environment=
+Executable=minble
+Type=1
+
+[CustomBuildSystem][BuildConfig0][ToolInstall]
+Arguments=install -y
+Enabled=true
+Environment=
+Executable=nimble
+Type=2
+
+[CustomBuildSystem][BuildConfig0][ToolPrune]
+Arguments=
+Enabled=false
+Environment=
+Executable=
+Type=4
+
 [Launch]
 Launch Configurations=Launch Configuration 0,Launch Configuration 1
 
