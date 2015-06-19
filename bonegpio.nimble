@@ -1,12 +1,11 @@
 [Package]
-name          = "BeagleboneBlackgpio"
+name          = "bone"
 version       = "0.1.0"
-author        = "Anonymous"
-description   = "New Nimble project for Nim"
-license       = "BSD"
+author        = "Radu Oana"
+description   = "Beagle bone black GPIO implementation"
+license       = "MIT"
 
 srcDir        = "src"
-bin           = "bonegpio"
 
 [Deps]
 Requires: "nim >= 0.10.0"
