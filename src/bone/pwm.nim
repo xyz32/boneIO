@@ -8,7 +8,7 @@ const
   pwmPeriodFile = "/sys/devices/ocp.?/pwm_test_$1.??/period"
   pwmDutyFile = "/sys/devices/ocp.?/pwm_test_$1.??/duty"
 
-proc startPWM* (pin: string) =
+proc pinModePWM (pin: string) =
   if bone.hasPWM(pin):
     writeFile(slotsFile, capeName)
     writeFile(slotsFile, pwmNameTamplate % [pin])
@@ -18,6 +18,7 @@ proc startPWM* (pin: string) =
 #end
 
 proc setPWM* (pin: string, duty: int32, period: int32 = 20000000) =
+  pinModePWM(pin)
   if duty < 0 or duty > 100:
     raise newException(ValueError, "Duty is a percentage [0..100]")
   #end
