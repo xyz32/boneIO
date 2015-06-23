@@ -1,5 +1,5 @@
 [Project]
-Name=BBB_GPIO
+Name=boneGPIO
 Manager=KDevCustomBuildSystem
 VersionControl=
 
