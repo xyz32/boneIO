@@ -43,13 +43,15 @@ proc analogWrite* (pin: string, duty: int32) =
   writeFile(pwmDutyFile % [pin], $dutyNs)
 #end
 
-proc analogWrite* (pin: string, duty: int32, period: int32 = 20000000) =
+proc analogWrite* (pin: string, duty: int32, freqHz: int32 = 2000) =
   ## Use pwm to write an analogic output.
 
   pinModePWM(pin)
   if duty < 0 or duty > 100:
     raise newException(ValueError, "Duty is a percentage [0..100]")
   #end
+
+  var period = (1/float(freqHz)) * 1_000_000_000
 
   var dutyNs = float(period) * (duty/100)
   writeFile(pwmPeriodFile % [pin], $period)
