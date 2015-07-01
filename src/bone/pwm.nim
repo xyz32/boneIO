@@ -31,31 +31,38 @@ proc pinModePWM (pin: string) =
   #end
 #end
 
-proc analogWrite* (pin: string, duty: int32) =
-  ## Use pwm to write an analogic output.
-  pinModePWM(pin)
-  if duty < 0 or duty > 100:
-    raise newException(ValueError, "Duty is a percentage [0..100]")
-  #end
-
-  var period = parseFloat(readFile(pwmPeriodFile % [pin]))
-  var dutyNs = float(period) * (duty/100)
-  writeFile(pwmDutyFile % [pin], $dutyNs)
-#end
-
-proc analogWrite* (pin: string, duty: float, freqHz: int32 = 2000) =
-  ## Use pwm to write an analogic output.
-
-  pinModePWM(pin)
+proc checkDuty (duty: float) =
   if duty < 0 or duty > 1:
     raise newException(ValueError, "Duty is a percentage [0..1]")
   #end
+#end
 
-  var period = (1/float(freqHz)) * 1_000_000_000
-  var dutyNs = float(period) * duty
-  
+proc getDutyInNs(duty, period: float): float =
+  result = period * duty
+#end
+
+proc analogWrite* (pin: string, duty: float) =
+  ## Use pwm to write an analogic output.
+
+  checkDuty(duty)
+  pinModePWM(pin)
+
+  var period = parseFloat(readFile(pwmPeriodFile % [pin]))
+
+  writeFile(pwmDutyFile % [pin], $getDutyInNs(duty, period))
+#end
+
+proc analogWrite* (pin: string, duty: float, freqHz: int32 = 2_000) =
+  ## Use pwm to write an analogic output.
+
+  checkDuty(duty)
+  pinModePWM(pin)
+
+  var period = float((1/float(freqHz)) * 1_000_000_000) #to nanoseconds
+
+  writeFile(pwmDutyFile % [pin], "0") #reset duty cycle
   writeFile(pwmPeriodFile % [pin], $period)
-  writeFile(pwmDutyFile % [pin], $dutyNs)
+  writeFile(pwmDutyFile % [pin], $getDutyInNs(duty, period))
 #end
 
 # Testing
