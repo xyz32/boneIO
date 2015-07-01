@@ -21,35 +21,27 @@ type
 const
   expFile = "/sys/class/gpio/export"
   unexpFile = "/sys/class/gpio/unexport"
-  direction_file = "/sys/class/gpio/gpio$1/direction"
+  directionFile = "/sys/class/gpio/gpio$1/direction"
   gpioValueFile = "/sys/class/gpio/gpio$1/value"
   ledTriggerFile = "/sys/class/leds/beaglebone:green:$1/trigger"
   ledBrightnessFile = "/sys/class/leds/beaglebone:green:$1/brightness"
 
-proc writeFile(file, value: string) =
-  var tFile = open(file, fmWrite)
-  tFile.writeln(value)
-  tFile.close()
-#end
-
-proc readFile(file: string): string =
-  var tFile = open(file, fmWrite)
-  result = tFile.readline()
-  tFile.close()
-#end
-
 proc exportPin (pinGpio: string, enable: bool = true) =
   ## Helper method to export the pins
   if enable:
-    writeFile(expFile, pinGpio)
+    if not existsFile(gpioValueFile % [pinGpio]):
+      writeFile(expFile, pinGpio)
+    #end
   else:
-    writeFile(unexpFile, pinGpio)
+    if existsFile(gpioValueFile % [pinGpio]):
+      writeFile(unexpFile, pinGpio)
+    #end
   #end
 #end
 
 proc setPinDirection(pinGpio: string, direction: Direction) =
   ## Helper method to set the pin direction
-  let fileName = direction_file % [pinGpio]
+  let fileName = directionFile % [pinGpio]
   writeFile(fileName, $direction)
 #end
 

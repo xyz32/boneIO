@@ -1,4 +1,4 @@
-import bone, bone/gpio, os
+import bone, bone/gpio, os, bone/pwm
 
 # Testing
 when isMainModule:

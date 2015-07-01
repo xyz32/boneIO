@@ -3,7 +3,7 @@ import tables, macros
 proc createEmpty(s, d: expr): expr {.compiletime.} =
   let k = s.kind
   result = d
-  
+
   if k == nnkBracket:
     if result.isNil:
       var bracket = newNimNode(nnkBracket)
@@ -12,23 +12,23 @@ proc createEmpty(s, d: expr): expr {.compiletime.} =
     elif result.kind != nnkPrefix and result[1].kind != nnkBracket:
       raise newException(Exception, "mixing list with " & $result.kind)
     #end
-    
+
     for i in 0..<s.len:
       result[1][0] = createEmpty(s[i], result[1][0])
     #end
-    
+
   elif k == nnkTableConstr:
     if result.isNil:
       result = newNimNode(nnkPar)
     elif result.kind != nnkPar:
       raise newException(Exception, "mixing tuple with something else")
     #end
-    
+
     for i in 0..<s.len:
       if s[i].kind != nnkExprColonExpr:
         raise newException(Exception, "use (a: 2) format instead of (2)")
       #end
-      
+
       var found = false
       for j in 0..<result.len:
         if $(result[j][0]) == $(s[i][0]):
@@ -37,7 +37,7 @@ proc createEmpty(s, d: expr): expr {.compiletime.} =
           break
         #end
       #end
-      
+
       if not found:
         result.add(newColonExpr(ident($(s[i][0])), createEmpty(s[i][1], nil)))
       #end
@@ -49,10 +49,10 @@ proc createEmpty(s, d: expr): expr {.compiletime.} =
       raise newException(Exception, "unexpected type " & $k)
   #end
 #end
- 
+
 proc createTuple(s, d: expr): expr {.compiletime.} =
   let k = d.kind
-  
+
   if k == nnkPrefix: # for @[]
     var bracket = newNimNode(nnkBracket)
     result = prefix(bracket, "@")
