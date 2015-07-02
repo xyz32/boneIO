@@ -36,11 +36,13 @@ type
 proc positionToDuty(servo: Servo, position: float): float =
   result = (servo.maxDuty - servo.minDuty) * position
 
-proc build* (pin: string): Servo =
+proc build* (pin: string, minDuty: float = 0.0375, maxDuty: float = 0.1125, freqHz: int32 = 50): Servo =
   ## Creates a new servo object with most common values.
-  result.minDuty = 0.0375 #most common value
-  result.maxDuty = 0.1125 #most common value
-  result.freqHz = 50 #most common value
+  ##
+  ## All "Duty" related parameters are in percentage
+  result.minDuty = minDuty
+  result.maxDuty = maxDuty
+  result.freqHz = freqHz
   result.pinName = pin
   pwm.analogWrite(result.pinName, (result.minDuty + result.maxDuty)/2, result.freqHz)
 
