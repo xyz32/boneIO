@@ -24,7 +24,7 @@ Run the ```nimble build``` command.
 Left to be done:
 - [X] GPIO
 - [X] PWM
-- [ ] Servos
+- [X] Servos (needs some testing)
 - [ ] ADC
 - [ ] I2P
 - [ ] UART
