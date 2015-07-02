@@ -38,7 +38,6 @@ proc positionToDuty(servo: Servo, position: float): float =
 
 proc build* (pin: string): Servo =
   ## Creates a new servo object with most common values.
-#   new(result)
   result.minDuty = 0.0375 #most common value
   result.maxDuty = 0.1125 #most common value
   result.freqHz = 50 #most common value
