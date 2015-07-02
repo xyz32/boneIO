@@ -48,6 +48,8 @@ proc build* (pin: string, minDuty: float = 0.0375, maxDuty: float = 0.1125, freq
 
 proc move* (servo: Servo, position: float) =
   ## Command the servo to move.
+  ##
+  ## Position is a percentage relative to the maximum range of muvment (maxDuty - minDuty).
   if position < 0 or position > 1:
     raise newException(ValueError, "Duty is a percentage value between [0..1]. Got " & $position)
 
