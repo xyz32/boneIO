@@ -45,3 +45,6 @@ Type=4
 
 [Project]
 VersionControlSupport=kdevgit
+
+[SourceFileTemplates]
+LastUsedTemplate=/home/xyz/.kde/share/apps/kdevfiletemplates/template_descriptions/nim_file.desktop
