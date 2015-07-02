@@ -9,6 +9,7 @@ const
   pwmDutyFile = "/sys/devices/ocp.3/pwm_test_$1.15/duty"
 
 proc readFile*(fileName: string): string =
+  #Workaround for the ftell limitations.
   var tFile = open(fileName, fmRead)
   result = ""
   try:
