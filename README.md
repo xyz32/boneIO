@@ -9,7 +9,7 @@ nimble build
 ```
 
 # Cross compiling
-For arm cross compiling download the [linaro](https://www.linaro.org/) tool chain. Edit the nim.cfg file and point all the compiles specific paths to the arm toolchain.
+For arm cross compiling download the [linaro](https://www.linaro.org/) tool chain. Edit the ```nim.cfg``` file and point all the compiles specific paths to the arm toolchain.
 For example:
 
 ```
