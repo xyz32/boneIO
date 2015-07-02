@@ -7,12 +7,12 @@ const
   pwmNameTamplate = "bone_pwm_$1"
   pwmPeriodFile = "/sys/devices/ocp.3/pwm_test_$1.15/period"
   pwmDutyFile = "/sys/devices/ocp.3/pwm_test_$1.15/duty"
-  
+
 proc readFile*(fileName: string): string =
   var tFile = open(fileName, fmRead)
   result = ""
   try:
-    while true:    
+    while true:
       result = result & tFile.readLine() & "\n"
     #end
   except IOError: discard
@@ -49,8 +49,8 @@ proc checkDuty (duty: float) =
   #end
 #end
 
-proc getDutyInNs(duty, period: float): float =
-  result = period * duty
+proc getDutyInNs(duty: float, period: int64): int64 =
+  result = int64(float(period) * duty)
 #end
 
 proc analogWrite* (pin: string, duty: float) =
@@ -58,8 +58,8 @@ proc analogWrite* (pin: string, duty: float) =
 
   checkDuty(duty)
   pinModePWM(pin)
-  echo readFile(pwmPeriodFile % [pin])
-  var period = parseFloat(readFile(pwmPeriodFile % [pin]))
+
+  var period = int64(parseInt(strip(readFile(pwmPeriodFile % [pin]), true, true)))
 
   writeFile(pwmDutyFile % [pin], $getDutyInNs(duty, period))
 #end
@@ -70,7 +70,7 @@ proc analogWrite* (pin: string, duty: float, freqHz: int32) =
   checkDuty(duty)
   pinModePWM(pin)
 
-  var period = float((1/float(freqHz)) * 1_000_000_000) #to nanoseconds
+  var period = int64((1/float(freqHz)) * 1_000_000_000) #to nanoseconds
 
   writeFile(pwmDutyFile % [pin], "0") #reset duty cycle
   writeFile(pwmPeriodFile % [pin], $period)
