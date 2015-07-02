@@ -26,4 +26,25 @@
 
 import bone/pwm
 
-discard
+type
+  Servo*: object
+    minDuty: float = 0.0375 #most common value
+    maxDuty: float = 0.1125 #most common value
+    freqHz: int32 = 50 #most common value
+    pinName: string = ""
+
+proc positionToDuty(servo: Servo, position: float): float =
+  result = (servo.maxDuty - servo.minDuty) * position
+
+proc getServo* (pin: string): Servo =
+  ## Creates a new servo object with most common values.
+  new(result)
+  result.pinName = pin
+  pwm.analogWrite(result.pin, (result.minDuty + result.maxDuty)/2, result.freqHz)
+
+proc moveServo* (servo: Servo, position: float) =
+  ## Command the servo to move.
+  if position < 0 or position > 1:
+    raise newException(ValueError, "Duty is a percentage value between [0..1]. Got " & $possition)
+
+  pwm.analogWrite(servo.pinName, positionToDuty(position))
