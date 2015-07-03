@@ -64,14 +64,15 @@ proc pinModePWM (pin: string) =
 
     if not isPWMEnabled(pin):
       writeFile(slotsFile, pwmNameTamplate % [pin])
+
+      #Give the device time to settle
+      var timeout = 50
+      while (not existsFile(pwmPeriodFile % [pin])) and timeout > 0 :
+        sleep (10)
+        timeout = timeout - 1;
+      #end
     #end
 
-    #Give the device time to settle
-    var timeout = 50
-    while (not existsFile(pwmPeriodFile % [pin])) and timeout > 0 :
-      sleep (10)
-      timeout = timeout - 1;
-    #end
   else:
     raise newException(ValueError, "Pin '" & pin & "' does not support PWM")
   #end
