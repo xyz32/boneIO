@@ -25,7 +25,7 @@
 #
 
 #http://elinux.org/EBC_Exercise_13_Pulse_Width_Modulation
-import bone, bone/gpio, strutils
+import bone, bone/gpio, strutils, os
 
 const
   slotsFile = "/sys/devices/bone_capemgr.9/slots"
@@ -64,6 +64,13 @@ proc pinModePWM (pin: string) =
 
     if not isPWMEnabled(pin):
       writeFile(slotsFile, pwmNameTamplate % [pin])
+    #end
+    
+    #Give the device time to settle
+    var timeout = 50
+    while (not existsFile(pwmPeriodFile % [pin])) and timeout > 0 :
+      sleep (10)
+      timeout = timeout - 1;
     #end
   else:
     raise newException(ValueError, "Pin '" & pin & "' does not support PWM")
