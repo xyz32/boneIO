@@ -121,8 +121,9 @@ macro jsonToTuple(s: expr): expr =
   createTuple(s, empty)
 #end
 
-# This information has been copyed form the bonescript.js project
+# This information has been copyed form the bonescript.js project.
 # Find more here: https://github.com/jadonk/bonescript
+# The parsing of the JSON will be done at compule time.
 const PinTuple = jsonToTuple(
       [
         {
