@@ -28,15 +28,22 @@
 import bone, bone/gpio, strutils, os
 
 const
-  slotsFile = "/sys/devices/bone_capemgr.9/slots"
   capeName = "am33xx_pwm"
   pwmNameTamplate = "bone_pwm_$1"
-  pwmPeriodFile = "/sys/devices/ocp.3/pwm_test_$1.15/period"
-  pwmDutyFile = "/sys/devices/ocp.3/pwm_test_$1.15/duty"
+  slotsFile = "/sys/devices/bone_capemgr.?/slots"
+  pwmPeriodFile = "/sys/devices/ocp.?/pwm_test_$1.??/period"
+  pwmDutyFile = "/sys/devices/ocp.?/pwm_test_$1.??/duty"
+  
+proc buildFileName (nameTemplate: string): string =
+  for file in walkFiles nameTemplate:
+    result = file
+    break
+  #end
+#end
 
-proc readFile*(fileName: string): string =
+proc readFile* (fileName: string): string =
   #Workaround for the ftell limitations.
-  var tFile = open(fileName, fmRead)
+  var tFile = open(buildFileName(fileName), fmRead)
   result = ""
   try:
     while true:
@@ -47,6 +54,12 @@ proc readFile*(fileName: string): string =
     tFile.close()
   #end
 #end
+
+proc writeFile* (fileName: string, data: string) =
+  #wrap the system function so we can scan for regex filenames.
+  system.writeFile(buildFileName(fileName), data)
+#end
+
 
 proc isCapeEnabled (): bool =
   result = contains(readFile(slotsFile), capeName)
