@@ -25,7 +25,7 @@
 #
 
 #http://elinux.org/EBC_Exercise_13_Pulse_Width_Modulation
-import bone, bone/gpio, strutils, os
+import bone, strutils, os
 
 const
   capeName = "am33xx_pwm"
@@ -33,7 +33,7 @@ const
   slotsFile = "/sys/devices/bone_capemgr.?/slots"
   pwmPeriodFile = "/sys/devices/ocp.?/pwm_test_$1.??/period"
   pwmDutyFile = "/sys/devices/ocp.?/pwm_test_$1.??/duty"
-  
+
 proc buildFileName (nameTemplate: string): string =
   for file in walkFiles nameTemplate:
     result = file
