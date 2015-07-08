@@ -70,7 +70,7 @@ proc createEmpty(s, d: expr): expr {.compiletime.} =
   elif k == nnkStrLit:
     result = newLit("")
   elif k == nnkIntLit:
-    result = newLit(0)
+    result = newLit(-1)
   else:
       raise newException(Exception, "unexpected type " & $k)
   #end
@@ -1677,7 +1677,7 @@ proc hasPWM* (pin: string): bool =
 #end
 
 proc hasADC* (pin: string): bool =
-  return (getPinData(pin).ain != "")
+  return (getPinData(pin).ain != -1)
 #end
 
 when isMainModule:
