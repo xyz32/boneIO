@@ -1676,6 +1676,10 @@ proc hasPWM* (pin: string): bool =
   return (getPinData(pin).pwm.name != "")
 #end
 
+proc hasADC* (pin: string): bool =
+  return (getPinData(pin).ain != "")
+#end
+
 when isMainModule:
   echo getPinData("P9_1").key
   #assert(getPinData("P9_46")["key"].getStr == "P9_46")

@@ -55,7 +55,7 @@ proc readFile* (fileName: string): string =
   #end
 #end
 
-proc writeFile* (fileName: string, data: string) =
+proc writeFile (fileName: string, data: string) =
   #wrap the system function so we can scan for regex filenames.
   system.writeFile(buildFileName(fileName), data)
 #end
