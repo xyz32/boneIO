@@ -41,7 +41,7 @@ proc buildFileName (nameTemplate: string): string =
   #end
 #end
 
-proc readFile* (fileName: string): string =
+proc readFile (fileName: string): string =
   #Workaround for the ftell limitations.
   var tFile = open(buildFileName(fileName), fmRead)
   result = ""
@@ -59,7 +59,6 @@ proc writeFile (fileName: string, data: string) =
   #wrap the system function so we can scan for regex filenames.
   system.writeFile(buildFileName(fileName), data)
 #end
-
 
 proc isCapeEnabled (): bool =
   result = contains(readFile(slotsFile), capeName)
