@@ -26,6 +26,10 @@
 
 import tables, macros
 
+const
+  DefaultString = ""
+  DefaultInt = -1
+
 proc createEmpty(s, d: expr): expr {.compiletime.} =
   let k = s.kind
   result = d
@@ -68,9 +72,9 @@ proc createEmpty(s, d: expr): expr {.compiletime.} =
         result.add(newColonExpr(ident($(s[i][0])), createEmpty(s[i][1], nil)))
       #end
   elif k == nnkStrLit:
-    result = newLit("")
+    result = newLit(DefaultString)
   elif k == nnkIntLit:
-    result = newLit(-1)
+    result = newLit(DefaultInt)
   else:
       raise newException(Exception, "unexpected type " & $k)
   #end
