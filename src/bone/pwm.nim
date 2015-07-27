@@ -79,9 +79,10 @@ proc pinModePWM (pin: string) =
 
       #Give the device time to settle
       var timeout = 50
+      var sleepInterval = 10
       while (not existsFile(pwmPeriodFile % [pin])) and timeout > 0 :
-        sleep (10)
-        timeout = timeout - 1;
+        sleep (sleepInterval)
+        timeout = timeout - sleepInterval;
       #end
     #end
 
