@@ -68,7 +68,7 @@ proc isPWMEnabled (pin: string): bool =
   result = contains(readFile(slotsFile), pwmNameTamplate)
 #end
 
-proc pinModePWM (pin: string) =
+proc pinModePWM* (pin: string, freqHz: int32) =
   if bone.hasPWM(pin):
     if not isCapeEnabled():
       writeFile(slotsFile, capeName)
@@ -78,14 +78,16 @@ proc pinModePWM (pin: string) =
       writeFile(slotsFile, pwmNameTamplate % [pin])
 
       #Give the device time to settle
-      var timeout = 50
+      var timeout = 10
       var sleepInterval = 10
       while (not existsFile(pwmPeriodFile % [pin])) and timeout > 0 :
         sleep (sleepInterval)
-        timeout = timeout - sleepInterval;
+        timeout = timeout - 1;
       #end
     #end
 
+    var period = int64((1/float(freqHz)) * 1_000_000_000) #to nanoseconds
+    writeFile(pwmPeriodFile % [pin], $period)
   else:
     raise newException(ValueError, "Pin '" & pin & "' does not support PWM")
   #end
@@ -105,23 +107,9 @@ proc analogWrite* (pin: string, duty: float) =
   ## Use pwm to write an analogic output.
 
   checkDuty(duty)
-  pinModePWM(pin)
 
   var period = int64(parseInt(strip(readFile(pwmPeriodFile % [pin]), true, true)))
 
-  writeFile(pwmDutyFile % [pin], $getDutyInNs(duty, period))
-#end
-
-proc analogWrite* (pin: string, duty: float, freqHz: int32) =
-  ## Use pwm to write an analogic output.
-
-  checkDuty(duty)
-  pinModePWM(pin)
-
-  var period = int64((1/float(freqHz)) * 1_000_000_000) #to nanoseconds
-
-  writeFile(pwmDutyFile % [pin], "0") #reset duty cycle
-  writeFile(pwmPeriodFile % [pin], $period)
   writeFile(pwmDutyFile % [pin], $getDutyInNs(duty, period))
 #end
 

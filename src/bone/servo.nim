@@ -46,7 +46,8 @@ proc build* (pin: string, minDuty: float = 0.0375, maxDuty: float = 0.1125, freq
   result.maxDuty = maxDuty
   result.freqHz = freqHz
   result.pinName = pin
-  pwm.analogWrite(result.pinName, (result.minDuty + result.maxDuty)/2, result.freqHz)
+  pwm.pinModePWM(result.pinName, result.freqHz)
+  pwm.analogWrite(result.pinName, (result.minDuty + result.maxDuty)/2)
 #end
 
 proc move* (servo: Servo, position: float) =
