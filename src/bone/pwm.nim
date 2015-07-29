@@ -78,9 +78,9 @@ proc pinModePWM* (pin: string, freqHz: int32) =
       writeFile(slotsFile, pwmNameTamplate % [pin])
 
       #Give the device time to settle
-      var timeout = 10
-      var sleepInterval = 100
-      while (not existsFile(pwmPeriodFile % [pin])) and timeout > 0 :
+      var timeout = 100
+      var sleepInterval = 10
+      while (not existsFile(buildFileName(pwmPeriodFile % [pin]))) and timeout > 0 :
         sleep (sleepInterval)
         timeout = timeout - 1;
       #end
