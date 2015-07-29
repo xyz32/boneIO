@@ -79,18 +79,24 @@ proc pinModePWM* (pin: string, freqHz: int32) =
 
       #Give the device time to settle
       var timeout = 10
-      var sleepInterval = 10
+      var sleepInterval = 100
       while (not existsFile(pwmPeriodFile % [pin])) and timeout > 0 :
         sleep (sleepInterval)
         timeout = timeout - 1;
       #end
     #end
-
-    var period = int64((1/float(freqHz)) * 1_000_000_000) #to nanoseconds
-    writeFile(pwmPeriodFile % [pin], $period)
+    if freqHz > 0:
+      var period = int64((1/float(freqHz)) * 1_000_000_000) #to nanoseconds
+      writeFile(pwmPeriodFile % [pin], $period)
+    #end
+      
   else:
     raise newException(ValueError, "Pin '" & pin & "' does not support PWM")
   #end
+#end
+
+proc pinModePWM* (pin: string) =
+  pinModePWM(pin, int32(0))
 #end
 
 proc checkDuty (duty: float) =
