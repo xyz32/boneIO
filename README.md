@@ -2,6 +2,9 @@
 GPIO implementation for the BeagleBone black for the [Nim](http://nim-lang.org/) language.
 The implementation is using the sysfs to "talk" to the hardware.
 
+## License
+The library is licensed under the MIT license.
+
 # Build
 Cd into the root of the project and run:
 ```
