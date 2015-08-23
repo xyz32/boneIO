@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015 Radu Oana <oanaradu32@gmail.com>
+# Copyright (c) 2015, Radu Oana <oanaradu32 at gmail dot com>
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -25,71 +25,29 @@
 #
 
 #http://elinux.org/EBC_Exercise_13_Pulse_Width_Modulation
-import bone, strutils, os
+import bone, bone/cape, strutils, os
 
 const
   capeName = "am33xx_pwm"
   pwmNameTamplate = "bone_pwm_$1"
-  slotsFile = "/sys/devices/bone_capemgr.?/slots"
   pwmPeriodFile = "/sys/devices/ocp.?/pwm_test_$1.??/period"
   pwmDutyFile = "/sys/devices/ocp.?/pwm_test_$1.??/duty"
 
-proc buildFileName (nameTemplate: string): string =
-  for file in walkFiles nameTemplate:
-    result = file
-    break
-  #end
-#end
-
-proc readFile (fileName: string): string =
-  #Workaround for the ftell limitations.
-  var tFile = open(buildFileName(fileName), fmRead)
-  result = ""
-  try:
-    while true:
-      result = result & tFile.readLine() & "\n"
-    #end
-  except IOError: discard
-  finally:
-    tFile.close()
-  #end
-#end
-
-proc writeFile (fileName: string, data: string) =
-  #wrap the system function so we can scan for regex filenames.
-  system.writeFile(buildFileName(fileName), data)
-#end
-
-proc isCapeEnabled (): bool =
-  result = contains(readFile(slotsFile), capeName)
-#end
-
-proc isPWMEnabled (pin: string): bool =
-  result = contains(readFile(slotsFile), pwmNameTamplate)
-#end
-
 proc pinModePWM* (pin: string, freqHz: int32) =
   if bone.hasPWM(pin):
-    if not isCapeEnabled():
-      writeFile(slotsFile, capeName)
+    if not cape.isEnabled(capeName):
+      cape.enable(capeName)
     #end
 
-    if not isPWMEnabled(pin):
-      writeFile(slotsFile, pwmNameTamplate % [pin])
-
-      #Give the device time to settle
-      var timeout = 100
-      var sleepInterval = 10
-      while (not existsFile(buildFileName(pwmPeriodFile % [pin]))) and timeout > 0 :
-        sleep (sleepInterval)
-        timeout = timeout - 1;
-      #end
+    if not cape.isEnabled(pwmNameTamplate % [pin]):
+      cape.enable(pwmNameTamplate % [pin])
     #end
+
     if freqHz > 0:
       var period = int64((1/float(freqHz)) * 1_000_000_000) #to nanoseconds
-      writeFile(pwmPeriodFile % [pin], $period)
+      cape.writeFile(pwmPeriodFile % [pin], $period)
     #end
-      
+
   else:
     raise newException(ValueError, "Pin '" & pin & "' does not support PWM")
   #end
@@ -114,9 +72,9 @@ proc analogWrite* (pin: string, duty: float) =
 
   checkDuty(duty)
 
-  var period = int64(parseInt(strip(readFile(pwmPeriodFile % [pin]), true, true)))
+  var period = int64(parseInt(strip(cape.readFile(pwmPeriodFile % [pin]), true, true)))
 
-  writeFile(pwmDutyFile % [pin], $getDutyInNs(duty, period))
+  cape.writeFile(pwmDutyFile % [pin], $getDutyInNs(duty, period))
 #end
 
 # Testing

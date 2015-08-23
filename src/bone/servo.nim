@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015 Radu Oana <oanaradu32@gmail.com>
+# Copyright (c) 2015, Radu Oana <oanaradu32 at gmail dot com>
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation

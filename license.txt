@@ -1,4 +1,4 @@
-Copyright (c) 2015, Radu Oana
+Copyright (c) 2015, Radu Oana <oanaradu32 at gmail dot com>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
