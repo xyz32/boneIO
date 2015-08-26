@@ -5,13 +5,23 @@ The implementation is using the sysfs to "talk" to the hardware.
 ## License
 The library is licensed under the MIT license.
 
-# Build
+## Install
+NOTE: This librari is not yet part of the default nimble repository, therefore a manual instalation is needed:
 Cd into the root of the project and run:
 ```
-nimble build
+nimble install
 ```
 
-# Cross compiling
+## Useing it with nimble
+See Install
+
+In your PROJECT.nimble file add:
+```
+[Deps]
+Requires: "..., boneGPIO, ..."
+```
+
+## Cross compiling
 For arm cross compiling download the [linaro](https://www.linaro.org/) tool chain. Edit the ```nim.cfg``` file and point all the compiles specific paths to the arm toolchain.
 For example:
 
@@ -23,7 +33,7 @@ arm.linux.gcc.linkerexe = "arm-linux-gnueabihf-gcc"
 
 Run the ```nimble build``` command.
 
-# TODO
+## TODO
 Left to be done:
 - [X] GPIO
 - [X] PWM
