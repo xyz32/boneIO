@@ -27,7 +27,6 @@ import bone, os
 
 const
   capeName = "cape-bone-iio"
-  slotsFile = "/sys/devices/bone_capemgr.?/slots"
 
 proc pinModeADC (pin: string) =
   if bone.hasADC(pin):
