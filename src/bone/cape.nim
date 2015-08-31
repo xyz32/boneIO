@@ -29,6 +29,7 @@ const
   slotsFile = "/sys/devices/bone_capemgr.?/slots"
 
 proc buildFileName* (nameTemplate: string): string =
+  ## Searches for the first file on the disk that matches the file name template or throws an exception otherwise.
   for file in walkFiles nameTemplate:
     result = file
     return
@@ -51,13 +52,19 @@ proc isEnabled* (capeName: string): bool =
   result = contains(readFile(slotsFile), capeName)
 #end
 
-proc enable* (capeName: string) =
-  writeFile(slotsFile, capeName)
-  #Give the device time to settle
+proc waitForFile* (fileName: string) = 
+  ## Wait untill a file is created
   var timeout = 100
-  var sleepInterval = 10
-  while (not existsFile(capeName)) and timeout > 0 :
+  let sleepInterval = 10
+  let fileToCheck = buildFileName(fileName)
+  while (not existsFile(fileToCheck)) and timeout > 0 :
     sleep (sleepInterval)
     timeout = timeout - 1;
+  #end
+#end
+
+proc enable* (capeName: string) =
+  if not isEnabled(capeName):
+    writeFile(slotsFile, capeName)
   #end
 #end

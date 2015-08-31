@@ -35,19 +35,15 @@ const
 
 proc pinModePWM* (pin: string, freqHz: int32) =
   if bone.hasPWM(pin):
-    if not cape.isEnabled(capeName):
-      cape.enable(capeName)
-    #end
-
-    if not cape.isEnabled(pwmNameTamplate % [pin]):
-      cape.enable(pwmNameTamplate % [pin])
-    #end
+    cape.enable(capeName)
+    cape.enable(pwmNameTamplate % [pin])
 
     if freqHz > 0:
-      var period = int64((1/float(freqHz)) * 1_000_000_000) #to nanoseconds
-      cape.writeFile(pwmPeriodFile % [pin], $period)
+      let period = int64((1/float(freqHz)) * 1_000_000_000) #to nanoseconds
+      let periodFile = pwmPeriodFile % [pin]
+      cape.waitForFile(periodFile)
+      cape.writeFile(periodFile, $period)
     #end
-
   else:
     raise newException(ValueError, "Pin '" & pin & "' does not support PWM")
   #end
@@ -72,7 +68,7 @@ proc analogWrite* (pin: string, duty: float) =
 
   checkDuty(duty)
 
-  var period = int64(parseInt(strip(cape.readFile(pwmPeriodFile % [pin]), true, true)))
+  let period = int64(parseInt(strip(cape.readFile(pwmPeriodFile % [pin]), true, true)))
 
   cape.writeFile(pwmDutyFile % [pin], $getDutyInNs(duty, period))
 #end
