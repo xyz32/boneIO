@@ -29,11 +29,12 @@ const
   slotsFile = "/sys/devices/bone_capemgr.?/slots"
   
 proc buildFileName* (nameTemplate: string): string =
-  result = nameTemplate #give it the best shut to get the file name.
   for file in walkFiles nameTemplate:
     result = file
-    break
+    return
   #end
+  # Did not find any file.
+  raise newException(IOError, "No file matching the template " & nameTemplate & "was found.")
 #end
 
 proc readFile* (fileName: string): string =
