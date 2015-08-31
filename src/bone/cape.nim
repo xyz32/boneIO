@@ -27,14 +27,14 @@ import strutils, os
 
 const
   slotsFile = "/sys/devices/bone_capemgr.?/slots"
-  
+
 proc buildFileName* (nameTemplate: string): string =
   for file in walkFiles nameTemplate:
     result = file
     return
   #end
   # Did not find any file.
-  raise newException(IOError, "No file matching the template " & nameTemplate & "was found.")
+  raise newException(IOError, "No file matching the template '" & nameTemplate & "' was found.")
 #end
 
 proc readFile* (fileName: string): string =
@@ -46,7 +46,7 @@ proc writeFile* (fileName: string, data: string) =
   #wrap the system function so we can scan for regex filenames.
   system.writeFile(buildFileName(fileName), data)
 #end
-  
+
 proc isEnabled* (capeName: string): bool =
   result = contains(readFile(slotsFile), capeName)
 #end
