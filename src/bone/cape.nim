@@ -55,9 +55,10 @@ proc isEnabled* (capeName: string): bool =
 proc waitForFile* (fileName: string) =
   ## Wait untill a file is created
   ## TODO: Maybe use fsmonitor for this? http://nim-lang.org/docs/fsmonitor.html
+  let 
+    sleepInterval = 10
+    fileToCheck = buildFileName(fileName)
   var timeout = 100
-  let sleepInterval = 10
-  let fileToCheck = buildFileName(fileName)
   while timeout > 0 :
     if existsFile(fileToCheck):
       return
