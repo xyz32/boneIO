@@ -52,15 +52,22 @@ proc isEnabled* (capeName: string): bool =
   result = contains(readFile(slotsFile), capeName)
 #end
 
-proc waitForFile* (fileName: string) = 
+proc waitForFile* (fileName: string) =
   ## Wait untill a file is created
+  ## TODO: Maybe use fsmonitor for this? http://nim-lang.org/docs/fsmonitor.html
   var timeout = 100
   let sleepInterval = 10
   let fileToCheck = buildFileName(fileName)
-  while (not existsFile(fileToCheck)) and timeout > 0 :
+  while timeout > 0 :
+    if existsFile(fileToCheck):
+      return
+    #end
+
     sleep (sleepInterval)
     timeout = timeout - 1;
   #end
+
+  raise newException(IOError, "File creation timeout. File: " & fileName)
 #end
 
 proc enable* (capeName: string) =
