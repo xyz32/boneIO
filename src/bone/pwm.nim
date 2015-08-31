@@ -53,13 +53,13 @@ proc pinModePWM* (pin: string) =
   pinModePWM(pin, int32(0))
 #end
 
-proc checkDuty (duty: float) =
+proc checkDuty (duty: float) {.noSideEffect.} =
   if duty < 0 or duty > 1:
     raise newException(ValueError, "Duty is a percentage value between [0..1]. Got " & $duty)
   #end
 #end
 
-proc getDutyInNs(duty: float, period: int64): int64 =
+proc getDutyInNs(duty: float, period: int64): int64 {.noSideEffect.} =
   result = int64(float(period) * duty)
 #end
 
