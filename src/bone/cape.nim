@@ -30,12 +30,13 @@ const
 
 proc buildFileName* (nameTemplate: string): string =
   ## Searches for the first file on the disk that matches the file name template or throws an exception otherwise.
+  result = ""
   for file in walkFiles nameTemplate:
     result = file
     return
   #end
   # Did not find any file.
-  raise newException(IOError, "No file matching the template '" & nameTemplate & "' was found.")
+  # raise newException(IOError, "No file matching the template '" & nameTemplate & "' was found.")
 #end
 
 proc readFile* (fileName: string): string =
@@ -55,11 +56,11 @@ proc isEnabled* (capeName: string): bool =
 proc waitForFile* (fileName: string) =
   ## Wait untill a file is created
   ## TODO: Maybe use fsmonitor for this? http://nim-lang.org/docs/fsmonitor.html
-  let 
-    sleepInterval = 10
-    fileToCheck = buildFileName(fileName)
+  let sleepInterval = 10
   var timeout = 100
+  
   while timeout > 0 :
+    let fileToCheck = buildFileName(fileName)
     if existsFile(fileToCheck):
       return
     #end

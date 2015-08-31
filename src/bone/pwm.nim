@@ -38,7 +38,8 @@ proc pinModePWM* (pin: string, freqHz: int32) =
     cape.enable(capeName) #Make sure the pwm controller is enabled
     cape.enable(pwmNameTamplate % [pin])
 
-    cape.waitForFile(pwmDutyFile) #Wait for PWM pin to initialize
+    let dutyFile = pwmDutyFile % [pin]
+    cape.waitForFile(dutyFile) #Wait for PWM pin to initialize
 
     if freqHz > 0:
       let period = int64((1/float(freqHz)) * 1_000_000_000) #to nanoseconds
