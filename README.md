@@ -41,3 +41,4 @@ Left to be done:
 - [ ] ADC
 - [ ] I2P
 - [ ] UART
+- [ ] Implement ASYNC version of the library.
