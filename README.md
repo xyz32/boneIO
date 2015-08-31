@@ -1,4 +1,4 @@
-# BeagleboneBlack_GPIO_nim
+# BeagleBone GPIO for Nim
 GPIO implementation for the BeagleBone black for the [Nim](http://nim-lang.org/) language.
 The implementation is using the sysfs to "talk" to the hardware.
 
