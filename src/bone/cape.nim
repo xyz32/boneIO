@@ -30,13 +30,12 @@ const
 
 proc buildFileName* (nameTemplate: string): string =
   ## Searches for the first file on the disk that matches the file name template or throws an exception otherwise.
-  result = ""
   for file in walkFiles nameTemplate:
     result = file
     return
   #end
   # Did not find any file.
-  # raise newException(IOError, "No file matching the template '" & nameTemplate & "' was found.")
+  raise newException(IOError, "No file matching the template '" & nameTemplate & "' was found.")
 #end
 
 proc readFile* (fileName: string): string =
@@ -60,11 +59,15 @@ proc waitForFile* (fileName: string) =
   var timeout = 100
   
   while timeout > 0 :
-    let fileToCheck = buildFileName(fileName)
-    if existsFile(fileToCheck):
-      return
+    try:
+      let fileToCheck = buildFileName(fileName)
+      if existsFile(fileToCheck):
+        return
+      #end
+    except IOError:
+      discard
     #end
-
+    
     sleep (sleepInterval)
     timeout = timeout - 1;
   #end
