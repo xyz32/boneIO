@@ -38,7 +38,7 @@ Left to be done:
 - [X] GPIO
 - [X] PWM
 - [X] Servos (needs some testing)
-- [ ] ADC
+- [X] ADC (needs some testing)
 - [ ] I2P
 - [ ] UART
 - [ ] Implement ASYNC version of the library.

@@ -23,14 +23,14 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 #
 #
-import bone, os
+import bone, os, bone/cape
 
 const
   capeName = "cape-bone-iio"
 
-proc pinModeADC (pin: string) =
+proc pinModeADC* (pin: string) =
   if bone.hasADC(pin):
-    discard
+    cape.enable(capeName) #Make sure the pwm controller is enabled
   else:
     raise newException(ValueError, "Pin '" & pin & "' does not support ADC")
   #end
@@ -38,6 +38,5 @@ proc pinModeADC (pin: string) =
 
 proc analogRead* (pin: string): int16 =
   ## Read analogic data form ADC pins.
-  pinModeADC(pin)
-
+  result = cape.readFile()
 #end
