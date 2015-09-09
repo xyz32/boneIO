@@ -15,8 +15,8 @@
 # 
 #
 
-proc pinModeI2P* (pin: string) =
-  if bone.hasI2P(pin):
+proc pinModeI2C* (pin: string) =
+  if bone.hasI2C(pin):
     discard
   else:
     raise newException(ValueError, "Pin '" & pin & "' does not support ADC")
