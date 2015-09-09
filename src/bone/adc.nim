@@ -27,6 +27,7 @@ import bone, os, bone/cape
 
 const
   capeName = "cape-bone-iio"
+  adcPinFile = "/sys/devices/ocp.?/helper.??/AIN$1"
 
 proc pinModeADC* (pin: string) =
   if bone.hasADC(pin):
@@ -36,7 +37,8 @@ proc pinModeADC* (pin: string) =
   #end
 #end
 
-proc analogRead* (pin: string): int16 =
+proc analogRead* (pin: string): int =
   ## Read analogic data form ADC pins.
-  result = cape.readFile()
+  let adcNo = bone.getPinData(pin).ain;
+  result = int(cape.readFile(adcPinFile % [adcNo]))
 #end
