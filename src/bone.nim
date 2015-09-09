@@ -24,7 +24,7 @@
 #
 #
 
-import tables, macros
+import tables, macros, strutils
 
 const
   DefaultString = ""
