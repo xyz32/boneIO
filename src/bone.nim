@@ -1655,33 +1655,44 @@ var pinData = initTable[string, type(PinTuple[0])]()
 
 proc loadPin(pin: string): bool =
   ## Only load pin data when the pin is accessed
+  result = false
   for i in 0..<PinTuple.len:
     if PinTuple[i].key == pin:
       pinData.add(PinTuple[i].key, PinTuple[i])
-      return true
+      result = true
+      break
     #end
   #end
-  return false
 #end
 
 proc getPinData* (pin: string): type(PinTuple[0]) =
   if pinData.hasKey(pin) or loadPin(pin):
-    return pinData[pin]
+    result = pinData[pin]
   else:
     raise newException(ValueError, "Key not found: '" & pin & "'")
   #end
 #end
 
 proc hasLED* (pin: string): bool =
-  return (getPinData(pin).led != "")
+  result = (getPinData(pin).led != DefaultString)
 #end
 
 proc hasPWM* (pin: string): bool =
-  return (getPinData(pin).pwm.name != "")
+  result = (getPinData(pin).pwm.name != DefaultString)
 #end
 
 proc hasADC* (pin: string): bool =
-  return (getPinData(pin).ain != -1)
+  result = (getPinData(pin).ain != DefaultInt)
+#end
+
+proc hasI2C* (pin: string): bool =
+  result = false
+  for opt in getPinData(pin).options:
+    if startsWith(opt, "i2c"):
+      result = true
+      break
+    #end
+  #end
 #end
 
 when isMainModule:
