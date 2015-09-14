@@ -32,28 +32,38 @@ const
   pwmNameTamplate = "bone_pwm_$1"
   pwmPeriodFile = "/sys/devices/ocp.?/pwm_test_$1.??/period"
   pwmDutyFile = "/sys/devices/ocp.?/pwm_test_$1.??/duty"
+  
+proc setFreqHz* (pin: string, freqHz: int) =
+  if freqHz > 0:
+    let period = int64((1/freqHz) * 1_000_000_000) #to nanoseconds
+    let periodFile = pwmPeriodFile % [pin]
+    cape.waitForFile(periodFile)
+    cape.writeFile(periodFile, $period)
+  #end
+#end
 
-proc pinModePWM* (pin: string, freqHz: int32) =
+proc pinModePWM* (pin: string, freqHz: int) =
   if bone.hasPWM(pin):
     cape.enable(capeName) #Make sure the pwm controller is enabled
-    cape.enable(pwmNameTamplate % [pin])
+    cape.waitForCape(capeName)
+    
+    let pwmController = pwmNameTamplate % [pin]
+    cape.enable(pwmController)
+    cape.waitForCape(pwmController)
 
+    #Wait for PWM pin to initialize
     let dutyFile = pwmDutyFile % [pin]
-    cape.waitForFile(dutyFile) #Wait for PWM pin to initialize
+    cape.waitForFile(dutyFile)
 
-    if freqHz > 0:
-      let period = int64((1/float(freqHz)) * 1_000_000_000) #to nanoseconds
-      let periodFile = pwmPeriodFile % [pin]
-      cape.waitForFile(periodFile)
-      cape.writeFile(periodFile, $period)
-    #end
+    setFreqHz(pin, freqHz)
   else:
     raise newException(ValueError, "Pin '" & pin & "' does not support PWM")
   #end
 #end
 
 proc pinModePWM* (pin: string) =
-  pinModePWM(pin, int32(0))
+  ## Set the Pin in PWM mode
+  pinModePWM(pin, 0)
 #end
 
 proc checkDuty (duty: float) {.noSideEffect.} =

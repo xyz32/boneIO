@@ -27,6 +27,8 @@ import strutils, os
 
 const
   slotsFile = "/sys/devices/bone_capemgr.?/slots"
+  sleepInterval = 10
+  initialTimeout = 100
 
 proc buildFileName* (nameTemplate: string): string =
   ## Searches for the first file on the disk that matches the file name template or throws an exception otherwise.
@@ -55,9 +57,8 @@ proc isEnabled* (capeName: string): bool =
 proc waitForFile* (fileName: string) =
   ## Wait untill a file is created
   ## TODO: Maybe use fsmonitor for this? http://nim-lang.org/docs/fsmonitor.html
-  let sleepInterval = 10
-  var timeout = 100
   
+  var timeout = initialTimeout
   while timeout > 0 :
     try:
       let fileToCheck = buildFileName(fileName)
@@ -73,6 +74,18 @@ proc waitForFile* (fileName: string) =
   #end
 
   raise newException(IOError, "File creation timeout. File: " & fileName)
+#end
+
+proc waitForCape* (capeName: string) =
+  var timeout = initialTimeout
+  while timeout > 0 :
+    if isEnabled(capeName):
+      return
+    #end
+
+    sleep (sleepInterval)
+    timeout = timeout - 1;
+  #end
 #end
 
 proc enable* (capeName: string) =
