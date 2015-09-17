@@ -42,7 +42,8 @@ proc setFreqHz* (pin: string, freqHz: int) =
   #end
 #end
 
-proc pinModePWM* (pin: string, freqHz: int) =
+proc pinModePWM* (pin: string) =
+  ## Set the Pin in PWM mode
   if bone.hasPWM(pin):
     cape.enable(capeName) #Make sure the pwm controller is enabled
     cape.waitForCape(capeName)
@@ -54,16 +55,9 @@ proc pinModePWM* (pin: string, freqHz: int) =
     #Wait for PWM pin to initialize
     let dutyFile = pwmDutyFile % [pin]
     cape.waitForFile(dutyFile)
-
-    setFreqHz(pin, freqHz)
   else:
     raise newException(ValueError, "Pin '" & pin & "' does not support PWM")
   #end
-#end
-
-proc pinModePWM* (pin: string) =
-  ## Set the Pin in PWM mode
-  pinModePWM(pin, 0)
 #end
 
 proc checkDuty (duty: float) {.noSideEffect.} =
