@@ -29,7 +29,9 @@ const
   capeName = "cape-bone-iio"
   adcPinFile = "/sys/devices/ocp.?/helper.??/AIN$1"
 
-proc pinModeADC* (pin: string) =
+proc pinModeADC* (pin: string) =.
+  ## Enable the ADC mode for the pin
+  
   if bone.hasADC(pin):
     cape.enable(capeName) #Make sure the pwm controller is enabled
   else:
@@ -38,7 +40,8 @@ proc pinModeADC* (pin: string) =
 #end
 
 proc analogRead* (pin: string): int =
-  ## Read analogic data form ADC pins.
+  ## Read analogic data form ADC pin.
+  
   let adcNo = bone.getPinData(pin).ain;
   result = int(cape.readFile(adcPinFile % [adcNo]))
 #end
