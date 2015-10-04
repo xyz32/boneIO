@@ -30,10 +30,105 @@ const
   DefaultString = ""
   DefaultInt = -1
 
+proc createEmpty(s, d: expr): expr {.compiletime.} =
+  let k = s.kind
+  result = d
+
+  if k == nnkBracket:
+    if result.isNil:
+      var bracket = newNimNode(nnkBracket)
+      result = prefix(bracket, "@")
+      bracket.add(nil)
+    elif result.kind != nnkPrefix and result[1].kind != nnkBracket:
+      raise newException(Exception, "mixing list with " & $result.kind)
+    #end
+
+    for i in 0..<s.len:
+      result[1][0] = createEmpty(s[i], result[1][0])
+    #end
+
+  elif k == nnkTableConstr:
+    if result.isNil:
+      result = newNimNode(nnkPar)
+    elif result.kind != nnkPar:
+      raise newException(Exception, "mixing tuple with something else")
+    #end
+
+    for i in 0..<s.len:
+      if s[i].kind != nnkExprColonExpr:
+        raise newException(Exception, "use (a: 2) format instead of (2)")
+      #end
+
+      var found = false
+      for j in 0..<result.len:
+        if $(result[j][0]) == $(s[i][0]):
+          result[j][1] = createEmpty(s[i][1], result[j][1])
+          found = true
+          break
+        #end
+      #end
+
+      if not found:
+        result.add(newColonExpr(ident($(s[i][0])), createEmpty(s[i][1], nil)))
+      #end
+  elif k == nnkStrLit:
+    result = newLit(DefaultString)
+  elif k == nnkIntLit:
+    result = newLit(DefaultInt)
+  else:
+      raise newException(Exception, "unexpected type " & $k)
+  #end
+#end
+
+proc createTuple(s, d: expr): expr {.compiletime.} =
+  let k = d.kind
+
+  if k == nnkPrefix: # for @[]
+    var bracket = newNimNode(nnkBracket)
+    result = prefix(bracket, "@")
+    if s.isNil or s.len == 0:
+      result = newCall(newNimNode(nnkBracketExpr).add(ident("newSeq")).
+                add(newCall(ident("type"), d[1][0])))
+    else:
+      for i in 0..<s.len:
+        bracket.add(createTuple(s[i], d[1][0]))
+      #end
+    #end
+  elif k == nnkPar:
+    result = newNimNode(nnkPar)
+    for j in 0..<d.len:
+      var found = false
+      if not s.isNil:
+        for i in 0..<s.len:
+          if $(d[j][0]) == $(s[i][0]):
+            result.add(newColonExpr(d[j][0],
+                  createTuple(s[i][1], d[j][1])))
+            found = true
+            break
+          #end
+        #end
+      #end
+      if not found:
+        result.add(newColonExpr(d[j][0],
+              createTuple(newNilLit(), d[j][1])))
+      #end
+    #end
+  elif k == nnkStrLit:
+    result = if s.isNil: d else: s
+  elif k == nnkIntLit:
+    result = if s.isNil: d else: s
+  #end
+#end
+
+macro jsonToTuple(s: expr): expr =
+  let empty = createEmpty(s, nil)
+  createTuple(s, empty)
+#end
+
 # This information has been copyed form the bonescript.js project.
 # Find more here: https://github.com/jadonk/bonescript
 # The parsing of the JSON will be done at compule time.
-  PinTuple = jsonToTuple(
+const PinTuple = jsonToTuple(
       [
         {
             "name": "USR0",
@@ -1555,102 +1650,6 @@ const
         }
       ]
     )
-
-
-proc createEmpty(s, d: expr): expr {.compiletime.} =
-  let k = s.kind
-  result = d
-
-  if k == nnkBracket:
-    if result.isNil:
-      var bracket = newNimNode(nnkBracket)
-      result = prefix(bracket, "@")
-      bracket.add(nil)
-    elif result.kind != nnkPrefix and result[1].kind != nnkBracket:
-      raise newException(Exception, "mixing list with " & $result.kind)
-    #end
-
-    for i in 0..<s.len:
-      result[1][0] = createEmpty(s[i], result[1][0])
-    #end
-
-  elif k == nnkTableConstr:
-    if result.isNil:
-      result = newNimNode(nnkPar)
-    elif result.kind != nnkPar:
-      raise newException(Exception, "mixing tuple with something else")
-    #end
-
-    for i in 0..<s.len:
-      if s[i].kind != nnkExprColonExpr:
-        raise newException(Exception, "use (a: 2) format instead of (2)")
-      #end
-
-      var found = false
-      for j in 0..<result.len:
-        if $(result[j][0]) == $(s[i][0]):
-          result[j][1] = createEmpty(s[i][1], result[j][1])
-          found = true
-          break
-        #end
-      #end
-
-      if not found:
-        result.add(newColonExpr(ident($(s[i][0])), createEmpty(s[i][1], nil)))
-      #end
-  elif k == nnkStrLit:
-    result = newLit(DefaultString)
-  elif k == nnkIntLit:
-    result = newLit(DefaultInt)
-  else:
-      raise newException(Exception, "unexpected type " & $k)
-  #end
-#end
-
-proc createTuple(s, d: expr): expr {.compiletime.} =
-  let k = d.kind
-
-  if k == nnkPrefix: # for @[]
-    var bracket = newNimNode(nnkBracket)
-    result = prefix(bracket, "@")
-    if s.isNil or s.len == 0:
-      result = newCall(newNimNode(nnkBracketExpr).add(ident("newSeq")).
-                add(newCall(ident("type"), d[1][0])))
-    else:
-      for i in 0..<s.len:
-        bracket.add(createTuple(s[i], d[1][0]))
-      #end
-    #end
-  elif k == nnkPar:
-    result = newNimNode(nnkPar)
-    for j in 0..<d.len:
-      var found = false
-      if not s.isNil:
-        for i in 0..<s.len:
-          if $(d[j][0]) == $(s[i][0]):
-            result.add(newColonExpr(d[j][0],
-                  createTuple(s[i][1], d[j][1])))
-            found = true
-            break
-          #end
-        #end
-      #end
-      if not found:
-        result.add(newColonExpr(d[j][0],
-              createTuple(newNilLit(), d[j][1])))
-      #end
-    #end
-  elif k == nnkStrLit:
-    result = if s.isNil: d else: s
-  elif k == nnkIntLit:
-    result = if s.isNil: d else: s
-  #end
-#end
-
-macro jsonToTuple(s: expr): expr =
-  let empty = createEmpty(s, nil)
-  createTuple(s, empty)
-#end
 
 var pinData = initTable[string, type(PinTuple[0])]()
 

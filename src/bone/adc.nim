@@ -23,13 +23,13 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 #
 #
-import bone, os, bone/cape
+import bone, os, bone/cape, strutils
 
 const
   capeName = "cape-bone-iio"
   adcPinFile = "/sys/devices/ocp.?/helper.??/AIN$1"
 
-proc pinModeADC* (pin: string) =.
+proc pinModeADC* (pin: string) =
   ## Enable the ADC mode for the pin
   
   if bone.hasADC(pin):
@@ -42,6 +42,6 @@ proc pinModeADC* (pin: string) =.
 proc analogRead* (pin: string): int =
   ## Read analogic data form ADC pin.
   
-  let adcNo = bone.getPinData(pin).ain;
-  result = int(cape.readFile(adcPinFile % [adcNo]))
+  let adcNo = bone.getPinData(pin).ain
+  result = parseInt(strip(cape.readFile(adcPinFile % [$adcNo]), true, true))
 #end
