@@ -91,7 +91,7 @@ proc pinModeReset* (pin: string) =
   exportPin($bone.getPinData(pin).gpio, false)
 #end
 
-proc digitalWrite* (pin: string, value: int8) =
+proc digitalWrite* (pin: string, value: int) =
   if bone.hasLED(pin):
     let pinLed = $bone.getPinData(pin).led
     writeFile(ledBrightnessFile % [pinLed], $value)
@@ -101,13 +101,13 @@ proc digitalWrite* (pin: string, value: int8) =
   #end
 #end
 
-proc digitalRead* (pin: string): int8 =
+proc digitalRead* (pin: string): int =
   if bone.hasLED(pin):
     let pinLed = $bone.getPinData(pin).led
-    result = int8(parseInt(readFile(ledBrightnessFile % [pinLed])))
+    result = int(parseInt(readFile(ledBrightnessFile % [pinLed])))
   else:
     let pinGpio = $bone.getPinData(pin).gpio
-    result = int8(parseInt(readFile(gpioValueFile % [pinGpio])))
+    result = int(parseInt(readFile(gpioValueFile % [pinGpio])))
   #end
 #end
 
