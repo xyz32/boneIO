@@ -17,25 +17,25 @@
 
 import bone, bone/cape
 
-proc i2cRead (busID: int, deviceID: int, regAddr: int): int =
-  ## Reads the content of the registry at address ``regAddr`` on device ``deviceID`` on I2Cbus ``busID``
+proc i2cRead (adapterID: int, deviceID: int, regAddr: int): int =
+  ## Reads the content of the registry at address ``regAddr`` on device ``deviceID`` on I2Cbus ``adapterID``
   
   discard
 #end
 
-proc i2cWrite (busID: int, deviceID: int, regAddr: int, data: int): int =
-  ## Writes data to the registry at address ``regAddr`` on device ``deviceID`` on I2Cbus ``busID``
+proc i2cWrite (adapterID: int, deviceID: int, regAddr: int, data: int): int =
+  ## Writes data to the registry at address ``regAddr`` on device ``deviceID`` on I2Cbus ``adapterID``
   
   discard
 #end
 
-proc i2cDump (busID: int, deviceID: int): seq[int] =
-  ## Reads the entire memory space of the device ``deviceID`` on I2Cbus ``busID``
+proc i2cDump (adapterID: int, deviceID: int): seq[int] =
+  ## Reads the entire memory space of the device ``deviceID`` on I2Cbus ``adapterID``
   
   discard
 #end
 
-proc i2cScan (busID: int): seq[int] =
+proc i2cScan (adapterID: int): seq[int] =
   ## Scans the entire I2CBus for available devices.
   ## WARNING: It may interfeer with other drivers.
   
