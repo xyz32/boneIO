@@ -40,5 +40,5 @@ Left to be done:
 - [X] Servos (needs some testing)
 - [X] ADC
 - [ ] I2C
-- [ ] UART
+- [ ] UART (After 1.0)
 - [ ] Implement ASYNC version of the library.
