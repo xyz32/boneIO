@@ -31,7 +31,7 @@ arm.linux.gcc.exe = "arm-linux-gnueabihf-gcc"
 arm.linux.gcc.linkerexe = "arm-linux-gnueabihf-gcc"
 ```
 
-Run the ```nimble build``` command.
+Run the ```nimble build``` command (or ```nimble install``` to get a release optimized build).
 
 ## TODO
 Left to be done:
