@@ -28,4 +28,19 @@ when isMainModule:
 
   pinModeReset("USR0")
   #end
+  
+#ADC TEST
+  adc.pinModeADC("P9_33")
+  gpio.pinMode("USR0", Direction.Out)
+  var blink = 0
+  var i = 0
+  while true:
+    let delay = adc.analogRead("P9_33")
+    if i >= delay:
+      gpio.digitalWrite("USR0", blink)
+      blink = (blink + 1) mod 2
+      i = 0
+    else:
+      i = i + 1
+      sleep(1)
 #end

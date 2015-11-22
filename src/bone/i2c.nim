@@ -13,29 +13,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # 
-#
+# http://elinux.org/Interfacing_with_I2C_Devices#Beagleboard_I2C2_Enable
 
-import bone, bone/cape
+import bone, bone/cape, strutils, os
 
-proc i2cRead (adapterID: int, deviceID: int, regAddr: int): int =
+const
+  i2cDevFile = "/dev/i2c-$1"
+  
+proc ioctl(f: File, device: uint) {.importc: "ioctl", 
+  header: "<sys/ioctl.h>", varargs, tags: [WriteIOEffect].}
+
+proc i2cRead* (adapterID: int, deviceID: int, regAddr: int): int =
   ## Reads the content of the registry at address ``regAddr`` on device ``deviceID`` on I2Cbus ``adapterID``
   
   discard
 #end
 
-proc i2cWrite (adapterID: int, deviceID: int, regAddr: int, data: int): int =
+proc i2cWrite* (adapterID: int, deviceID: int, regAddr: int, data: int): int =
   ## Writes data to the registry at address ``regAddr`` on device ``deviceID`` on I2Cbus ``adapterID``
   
   discard
 #end
 
-proc i2cDump (adapterID: int, deviceID: int): seq[int] =
+proc i2cDump* (adapterID: int, deviceID: int): seq[int] =
   ## Reads the entire memory space of the device ``deviceID`` on I2Cbus ``adapterID``
   
   discard
 #end
 
-proc i2cScan (adapterID: int): seq[int] =
+proc i2cScan* (adapterID: int): seq[int] =
   ## Scans the entire I2CBus for available devices.
   ## WARNING: It may interfeer with other drivers.
   

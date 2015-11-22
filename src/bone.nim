@@ -1694,7 +1694,3 @@ proc hasI2C* (pin: string): bool =
     #end
   #end
 #end
-
-when isMainModule:
-  echo getPinData("P9_1").key
-  #assert(getPinData("P9_46")["key"].getStr == "P9_46")
