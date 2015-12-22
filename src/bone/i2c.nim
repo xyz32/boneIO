@@ -1,4 +1,4 @@
-#
+﻿#
 # Copyright 2015 Radu Oana <oanaradu32 at gmail dot com>
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,9 +19,22 @@ import bone, bone/cape, strutils, os
 
 const
   i2cDevFile = "/dev/i2c-$1"
-  
+  i2cCape = "I2C$1"
+
 proc ioctl(f: File, device: uint) {.importc: "ioctl", 
   header: "<sys/ioctl.h>", varargs, tags: [WriteIOEffect].}
+
+proc i2cOpen* (adapterID: int): File =
+  ## Open the i2c bus and return a handle
+  cape.enable(i2cCape % [$adapterID])
+  result = open(i2cDevFile % [$adapterID], fmWrite)
+  defer: close(result)
+#end
+
+proc i2cClose* (adapterHandle: File) =
+  ## Close the i2c bus and return a handle
+  close(adapterHandle)
+#end
 
 proc i2cRead* (adapterID: int, deviceID: int, regAddr: int): int =
   ## Reads the content of the registry at address ``regAddr`` on device ``deviceID`` on I2Cbus ``adapterID``

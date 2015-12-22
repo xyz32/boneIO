@@ -30,7 +30,7 @@ const
   DefaultString = ""
   DefaultInt = -1
 
-proc createEmpty(s, d: expr): expr {.compiletime.} =
+proc createEmpty(s, d: NimNode): NimNode {.compiletime.} =
   let k = s.kind
   result = d
 
@@ -80,7 +80,7 @@ proc createEmpty(s, d: expr): expr {.compiletime.} =
   #end
 #end
 
-proc createTuple(s, d: expr): expr {.compiletime.} =
+proc createTuple(s, d: NimNode): NimNode {.compiletime.} =
   let k = d.kind
 
   if k == nnkPrefix: # for @[]
