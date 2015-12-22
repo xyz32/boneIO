@@ -28,7 +28,7 @@ proc i2cOpen* (adapterID: int): File =
   ## Open the i2c bus and return a handle
   cape.enable(i2cCape % [$adapterID])
   result = open(i2cDevFile % [$adapterID], fmWrite)
-  defer: close(result)
+  defer: i2cClose(result)
 #end
 
 proc i2cClose* (adapterHandle: File) =
