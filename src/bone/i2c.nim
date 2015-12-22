@@ -24,16 +24,16 @@ const
 proc ioctl(f: File, device: uint) {.importc: "ioctl", 
   header: "<sys/ioctl.h>", varargs, tags: [WriteIOEffect].}
 
-proc i2cOpen* (adapterID: int): File =
-  ## Open the i2c bus and return a handle
-  cape.enable(i2cCape % [$adapterID])
-  result = open(i2cDevFile % [$adapterID], fmWrite)
-  defer: i2cClose(result)
+proc closeBus* (busHandle: File) =
+  ## Close the i2c bus and return a handle
+  close(busHandle)
 #end
 
-proc i2cClose* (adapterHandle: File) =
-  ## Close the i2c bus and return a handle
-  close(adapterHandle)
+proc openBus* (busID: int): File =
+  ## Open the i2c bus and return a handle
+  cape.enable(i2cCape % [$busID])
+  result = open(i2cDevFile % [$busID], fmWrite)
+  defer: closeBus(result)
 #end
 
 proc i2cRead* (adapterID: int, deviceID: int, regAddr: int): int =
