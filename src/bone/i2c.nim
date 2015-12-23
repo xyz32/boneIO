@@ -21,19 +21,27 @@ const
   i2cDevFile = "/dev/i2c-$1"
   i2cCape = "I2C$1"
 
-proc ioctl(f: File, device: uint) {.importc: "ioctl", 
+proc ioctl(f: File, device: uint): File {.importc: "ioctl", 
   header: "<sys/ioctl.h>", varargs, tags: [WriteIOEffect].}
 
 proc closeBus* (busHandle: File) =
   ## Close the i2c bus and return a handle
+  
   close(busHandle)
 #end
 
 proc openBus* (busID: int): File =
   ## Open the i2c bus and return a handle
+  
   cape.enable(i2cCape % [$busID])
-  result = open(i2cDevFile % [$busID], fmWrite)
+  result = open(i2cDevFile % [$busID], fmReadWrite)
   defer: closeBus(result)
+#end
+
+proc setSlaveAddress* (busHandle: File, slaveAddr: uint): File =
+  ## Set up the i2c bus to connect to a specific client
+  
+  result = ioctl(busHandle, slaveAddr)
 #end
 
 proc i2cRead* (adapterID: int, deviceID: int, regAddr: int): int =
