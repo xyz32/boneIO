@@ -38,31 +38,35 @@ proc openBus* (busID: int): File =
   defer: closeBus(result)
 #end
 
-proc setSlaveAddress* (busHandle: File, slaveAddr: uint): File =
+proc setSlaveAddress* (busHandle: File, slaveAddr: int): File =
   ## Set up the i2c bus to connect to a specific client
   
-  result = ioctl(busHandle, slaveAddr)
+  result = ioctl(busHandle, uint(slaveAddr))
 #end
 
-proc i2cRead* (adapterID: int, deviceID: int, regAddr: int): int =
-  ## Reads the content of the registry at address ``regAddr`` on device ``deviceID`` on I2Cbus ``adapterID``
+proc readRaw* (busID: int, deviceID: int, data: var openArray[int8|uint8], nBytes: int): int =
+  ## Reads the nBytes of the device at address deviceID
+  var
+    bus: File
   
-  discard
+  bus = openBus(busID)
+  setSlaveAddress(bus, deviceID)
+  result = readBytes(bus, data, 0, nBytes)
 #end
 
-proc i2cWrite* (adapterID: int, deviceID: int, regAddr: int, data: int): int =
+proc i2cWrite* (busID: int, deviceID: int, regAddr: int, data: int): int =
   ## Writes data to the registry at address ``regAddr`` on device ``deviceID`` on I2Cbus ``adapterID``
   
   discard
 #end
 
-proc i2cDump* (adapterID: int, deviceID: int): seq[int] =
+proc i2cDump* (busID: int, deviceID: int): seq[int] =
   ## Reads the entire memory space of the device ``deviceID`` on I2Cbus ``adapterID``
   
   discard
 #end
 
-proc i2cScan* (adapterID: int): seq[int] =
+proc i2cScan* (busID: int): seq[int] =
   ## Scans the entire I2CBus for available devices.
   ## WARNING: It may interfeer with other drivers.
   
