@@ -21,7 +21,7 @@ const
   i2cDevFile = "/dev/i2c-$1"
   i2cCape = "I2C$1"
 
-proc ioctl(f: File, device: uint): int {.importc: "ioctl", 
+proc ioctl(f: FileHandle, device: uint): int {.importc: "ioctl", 
   header: "<sys/ioctl.h>", varargs, tags: [WriteIOEffect].}
 
 proc closeBus* (busHandle: File) =
@@ -41,8 +41,8 @@ proc openBus* (busID: int): File =
 proc setSlaveAddress* (busHandle: File, slaveAddr: int) =
   ## Set up the i2c bus to connect to a specific client
   
-  if ioctl(busHandle, uint(slaveAddr), 0x0) != 0:
-    raise newException(IOError, "Failed to set slave address: '" & $slaveAddr & "'")
+  if ioctl(getFileHandle(busHandle), uint(slaveAddr), 0x0) != 0:
+    raiseOSError(osLastError(), "Failed to set slave address: '" & $slaveAddr & "'")
   #end
 #end
 
