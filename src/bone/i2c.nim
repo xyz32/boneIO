@@ -20,6 +20,7 @@ import bone, bone/cape, strutils, os
 const
   i2cDevFile = "/dev/i2c-$1"
   i2cCape = "I2C$1"
+  I2C_SLAVE = 0x0703
 
 proc ioctl(f: FileHandle, device: uint): int {.importc: "ioctl", 
   header: "<sys/ioctl.h>", varargs, tags: [WriteIOEffect].}
@@ -41,7 +42,7 @@ proc openBus* (busID: int): File =
 proc setSlaveAddress* (busHandle: File, slaveAddr: int) =
   ## Set up the i2c bus to connect to a specific client
   
-  if ioctl(getFileHandle(busHandle), uint(slaveAddr), 0x0) != 0:
+  if ioctl(getFileHandle(busHandle), I2C_SLAVE, uint(slaveAddr)) != 0:
     raiseOSError(osLastError(), "Failed to set slave address: '" & $slaveAddr & "'")
   #end
 #end
