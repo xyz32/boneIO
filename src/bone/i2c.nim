@@ -20,7 +20,24 @@ import bone, bone/cape, strutils, os
 const
   i2cDevFile = "/dev/i2c-$1"
   i2cCape = "I2C$1"
-  I2C_SLAVE = 0x0703
+  
+  #i2c controller bus flags
+  I2C_RETRIES     = 0x0701 ## number of times a device address should be polled when not acknowledging
+  I2C_TIMEOUT     = 0x0702 ## set timeout in units of 10 ms
+
+# NOTE: Slave address is 7 or 10 bits, but 10-bit addresses
+# are NOT supported! (due to code brokenness)
+
+  I2C_SLAVE       = 0x0703 ## Use this slave address
+  I2C_SLAVE_FORCE = 0x0706 ## Use this slave address, even if it is already in use by a driver!
+  I2C_TENBIT      = 0x0704 ## 0 for 7 bit addrs, != 0 for 10 bit
+
+  I2C_FUNCS       = 0x0705 ## Get the adapter functionality mask
+
+  I2C_RDWR        = 0x0707 ## Combined R/W transfer (one STOP only)
+
+  I2C_PEC         = 0x0708 ## != 0 to use PEC with SMBus
+  I2C_SMBUS       = 0x0720 ## SMBus transfer
 
 proc ioctl(f: FileHandle, device: uint): int {.importc: "ioctl", 
   header: "<sys/ioctl.h>", varargs, tags: [WriteIOEffect].}
