@@ -64,7 +64,10 @@ proc setSlaveAddress* (busHandle: File, slaveAddr: int) =
 #end
 
 proc setMemoryAddress (deviceHandle: File, memoryAddress: byte) =
-  if writeBytes(deviceHandle, [memoryAddress], 0, 1) != 1:
+  var addrObj: array [0..0, byte]
+  
+  addrObj[0] = memoryAddress
+  if posix.write(getFileHandle(deviceHandle), addr(addrObj[0]), 1) != 1:
     raise newException(IOError, "Failed to set memory address '" & $memoryAddress & "'")
   #end
 #end
@@ -72,10 +75,16 @@ proc setMemoryAddress (deviceHandle: File, memoryAddress: byte) =
 proc putBytes* (deviceHandle: File, memoryAddress: byte, data: openArray[byte]): int =
   ## Set the memory location to be read from, and read the data.
 
-  setMemoryAddress(deviceHandle, memoryAddress)
+  var dataPlusAddress: seq [byte]
 
-  result = writeBytes(deviceHandle, data, 0, data.len)
-  if result != data.len:
+  newSeq(dataPlusAddress, data.len + 1)
+  dataPlusAddress[0] = memoryAddress
+  for i in low(data)..high(data):
+      dataPlusAddress[i+1] = data[i]
+  #end
+
+  result = posix.write(getFileHandle(deviceHandle), addr(dataPlusAddress[0]), dataPlusAddress.len)
+  if result != dataPlusAddress.len:
     raise newException(IOError, "Failed to write '" & $data.len & "' bytes at address '" & $memoryAddress & "'")
   #end
 #end
