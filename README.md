@@ -39,8 +39,8 @@ Left to be done:
 - [X] PWM
 - [X] Servos (needs some testing)
 - [X] ADC
-- [ ] I2C
-- [ ] UART (After 1.0)
+- [X] I2C
+- [ ] UART
 - [ ] eQEP enhanced Quadrature-Encoded Pulse
-- [ ] PRU Support
-- [ ] Implement ASYNC version of the library.
+- [ ] PRU Support. (After 1.0)
+- [ ] Implement ASYNC version of the library. (After 1.0)

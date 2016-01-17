@@ -39,63 +39,56 @@ const
   I2C_PEC         = 0x0708 ## != 0 to use PEC with SMBus
   I2C_SMBUS       = 0x0720 ## SMBus transfer
 
-proc ioctl(f: FileHandle, device: uint): int {.importc: "ioctl", 
-  header: "<sys/ioctl.h>", varargs, tags: [WriteIOEffect].}
+# proc ioctl(f: FileHandle, device: uint): int {.importc: "ioctl", 
+#   header: "<sys/ioctl.h>", varargs, tags: [WriteIOEffect].}
+
+# proc read(f: FileHandle, buffer: pointer, len: Natural): int {.importc: "read", 
+#   header: "<unistd.h>", varargs, tags: [WriteIOEffect].}
 
 proc closeBus* (busHandle: File) =
   ## Close the i2c bus and return a handle
-  
+
   close(busHandle)
 #end
 
 proc openBus* (busID: int): File =
   ## Open the i2c bus and return a handle
-  
+
   cape.enable(i2cCape % [$busID])
   result = open(i2cDevFile % [$busID], fmReadWrite)
 #end
 
 proc setSlaveAddress* (busHandle: File, slaveAddr: int) =
   ## Set up the i2c bus to connect to a specific client
-  
+
   if ioctl(getFileHandle(busHandle), I2C_SLAVE, uint(slaveAddr)) != 0:
     raiseOSError(osLastError(), "Failed to set slave address '" & $slaveAddr & "':")
   #end
 #end
 
-proc writeByte* (devideHandle: File, byteIn: byte) =
-  ## Write one byte
-  
-  discard
+proc setMemoryAddress (deviceHandle: File, memoryAddress: byte) =
+  if writeBytes(deviceHandle, [memoryAddress], 0, 1) != 1:
+    raise newException(IOError, "Failed to set memory address '" & $memoryAddress & "'")
+  #end
 #end
 
-proc readRaw* (busID: int, deviceID: int, data: var openArray[int8|uint8], nBytes: int): int =
-  ## Reads the nBytes of the device at address deviceID
-  var
-    bus: File
-  
-  bus = openBus(busID)
-  defer: closeBus(bus)
-  setSlaveAddress(bus, deviceID)
-  result = readBytes(bus, data, 0, nBytes)
-  closeBus(result)
+proc putBytes* (deviceHandle: File, memoryAddress: byte, data: openArray[byte]): int =
+  ## Set the memory location to be read from, and read the data.
+
+  setMemoryAddress(deviceHandle, memoryAddress)
+
+  result = writeBytes(deviceHandle, data, 0, data.len)
+  if result != data.len:
+    raise newException(IOError, "Failed to write '" & $data.len & "' bytes at address '" & $memoryAddress & "'")
+  #end
 #end
 
-proc i2cWrite* (busID: int, deviceID: int, regAddr: int, data: int): int =
-  ## Writes data to the registry at address ``regAddr`` on device ``deviceID`` on I2Cbus ``adapterID``
-  
-  discard
-#end
+proc getBytes* (deviceHandle: File, memoryAddress: byte, data: var openArray[byte], length: int): int =
+  ## Read bytes from the device at the specified address.
 
-proc i2cDump* (busID: int, deviceID: int): seq[int] =
-  ## Reads the entire memory space of the device ``deviceID`` on I2Cbus ``adapterID``
-  
-  discard
-#end
+  setMemoryAddress(deviceHandle, memoryAddress)
 
-proc i2cScan* (busID: int): seq[int] =
-  ## Scans the entire I2CBus for available devices.
-  ## WARNING: It may interfeer with other drivers.
-  
-  discard
-#end
+  result = readBytes(deviceHandle, data, 0, length)
+  #result = read(getFileHandle(deviceHandle), addr(data[0]), length)
+  if result != length:
+    raise newException(IOError, "Failed to read bytes from address '" & $memoryAddress & "'")

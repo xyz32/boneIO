@@ -1,6 +1,6 @@
 [Package]
 name          = "boneGPIO"
-version       = "0.5.0"
+version       = "0.6.0"
 author        = "Radu Oana"
 description   = "Beagle bone black GPIO implementation"
 license       = "MIT"
@@ -8,4 +8,4 @@ license       = "MIT"
 srcDir        = "src"
 
 [Deps]
-Requires: "nim >= 0.11.3"
+Requires: "nim >= 0.12.0"
