@@ -41,6 +41,6 @@ Left to be done:
 - [X] ADC
 - [X] I2C
 - [ ] UART
-- [ ] eQEP enhanced Quadrature-Encoded Pulse
+- [ ] eQEP enhanced Quadrature-Encoder Pulse
 - [ ] PRU Support. (After 1.0)
 - [ ] Implement ASYNC version of the library. (After 1.0)
