@@ -53,15 +53,20 @@ proc openBus* (busID: int): File =
   
   cape.enable(i2cCape % [$busID])
   result = open(i2cDevFile % [$busID], fmReadWrite)
-  defer: closeBus(result)
 #end
 
 proc setSlaveAddress* (busHandle: File, slaveAddr: int) =
   ## Set up the i2c bus to connect to a specific client
   
   if ioctl(getFileHandle(busHandle), I2C_SLAVE, uint(slaveAddr)) != 0:
-    raiseOSError(osLastError(), "Failed to set slave address: '" & $slaveAddr & "'")
+    raiseOSError(osLastError(), "Failed to set slave address '" & $slaveAddr & "':")
   #end
+#end
+
+proc writeByte* (devideHandle: File, byteIn: byte) =
+  ## Write one byte
+  
+  discard
 #end
 
 proc readRaw* (busID: int, deviceID: int, data: var openArray[int8|uint8], nBytes: int): int =
@@ -70,8 +75,10 @@ proc readRaw* (busID: int, deviceID: int, data: var openArray[int8|uint8], nByte
     bus: File
   
   bus = openBus(busID)
+  defer: closeBus(bus)
   setSlaveAddress(bus, deviceID)
   result = readBytes(bus, data, 0, nBytes)
+  closeBus(result)
 #end
 
 proc i2cWrite* (busID: int, deviceID: int, regAddr: int, data: int): int =
