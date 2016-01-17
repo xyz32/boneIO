@@ -15,7 +15,7 @@
 # 
 # http://elinux.org/Interfacing_with_I2C_Devices#Beagleboard_I2C2_Enable
 
-import bone, bone/cape, strutils, os
+import bone, bone/cape, strutils, os, posix
 
 const
   i2cDevFile = "/dev/i2c-$1"
@@ -41,9 +41,6 @@ const
 
 # proc ioctl(f: FileHandle, device: uint): int {.importc: "ioctl", 
 #   header: "<sys/ioctl.h>", varargs, tags: [WriteIOEffect].}
-
-# proc read(f: FileHandle, buffer: pointer, len: Natural): int {.importc: "read", 
-#   header: "<unistd.h>", varargs, tags: [WriteIOEffect].}
 
 proc closeBus* (busHandle: File) =
   ## Close the i2c bus and return a handle
@@ -88,7 +85,9 @@ proc getBytes* (deviceHandle: File, memoryAddress: byte, data: var openArray[byt
 
   setMemoryAddress(deviceHandle, memoryAddress)
 
-  result = readBytes(deviceHandle, data, 0, length)
-  #result = read(getFileHandle(deviceHandle), addr(data[0]), length)
+  #result = readBytes(deviceHandle, data, 0, length)
+  result = posix.read(getFileHandle(deviceHandle), addr(data[0]), length)
   if result != length:
     raise newException(IOError, "Failed to read bytes from address '" & $memoryAddress & "'")
+  #end
+#end
