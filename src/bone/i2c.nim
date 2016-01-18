@@ -20,13 +20,13 @@ import bone, bone/cape, strutils, os, posix
 const
   i2cDevFile = "/dev/i2c-$1"
   i2cCape = "I2C$1"
-  
+
   #i2c controller bus flags
   I2C_RETRIES     = 0x0701 ## number of times a device address should be polled when not acknowledging
   I2C_TIMEOUT     = 0x0702 ## set timeout in units of 10 ms
 
-# NOTE: Slave address is 7 or 10 bits, but 10-bit addresses
-# are NOT supported! (due to code brokenness)
+  # NOTE: Slave address is 7 or 10 bits, but 10-bit addresses
+  # are NOT supported! (due to code brokenness)
 
   I2C_SLAVE       = 0x0703 ## Use this slave address
   I2C_SLAVE_FORCE = 0x0706 ## Use this slave address, even if it is already in use by a driver!
@@ -38,9 +38,6 @@ const
 
   I2C_PEC         = 0x0708 ## != 0 to use PEC with SMBus
   I2C_SMBUS       = 0x0720 ## SMBus transfer
-
-# proc ioctl(f: FileHandle, device: uint): int {.importc: "ioctl", 
-#   header: "<sys/ioctl.h>", varargs, tags: [WriteIOEffect].}
 
 proc closeBus* (busHandle: File) =
   ## Close the i2c bus and return a handle
@@ -55,7 +52,7 @@ proc openBus* (busID: int): File =
   result = open(i2cDevFile % [$busID], fmReadWrite)
 #end
 
-proc setSlaveAddress* (busHandle: File, slaveAddr: int) =
+proc setSlaveAddress (busHandle: File, slaveAddr: byte) =
   ## Set up the i2c bus to connect to a specific client
 
   if ioctl(getFileHandle(busHandle), I2C_SLAVE, uint(slaveAddr)) != 0:
@@ -72,7 +69,7 @@ proc setMemoryAddress (deviceHandle: File, memoryAddress: byte) =
   #end
 #end
 
-proc putBytes* (deviceHandle: File, memoryAddress: byte, data: openArray[byte]): int =
+proc putBytes* (deviceHandle: File, slaveAddr: byte, memoryAddress: byte, data: openArray[byte]): int =
   ## Set the memory location to be read from, and read the data.
 
   var dataPlusAddress: seq [byte]
@@ -82,6 +79,8 @@ proc putBytes* (deviceHandle: File, memoryAddress: byte, data: openArray[byte]):
   for i in low(data)..high(data):
       dataPlusAddress[i+1] = data[i]
   #end
+  
+  setSlaveAddress(deviceHandle, slaveAddr)
 
   result = posix.write(getFileHandle(deviceHandle), addr(dataPlusAddress[0]), dataPlusAddress.len)
   if result != dataPlusAddress.len:
@@ -89,9 +88,10 @@ proc putBytes* (deviceHandle: File, memoryAddress: byte, data: openArray[byte]):
   #end
 #end
 
-proc getBytes* (deviceHandle: File, memoryAddress: byte, data: var openArray[byte], length: int): int =
+proc getBytes* (deviceHandle: File, slaveAddr: byte, memoryAddress: byte, data: var openArray[byte], length: int): int =
   ## Read bytes from the device at the specified address.
 
+  setSlaveAddress(deviceHandle, slaveAddr)
   setMemoryAddress(deviceHandle, memoryAddress)
 
   #result = readBytes(deviceHandle, data, 0, length)
