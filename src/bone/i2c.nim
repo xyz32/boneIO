@@ -52,7 +52,7 @@ proc openBus* (busID: int): File =
   result = open(i2cDevFile % [$busID], fmReadWrite)
 #end
 
-proc setSlaveAddress (busHandle: File, slaveAddr: byte) =
+proc setSlaveAddress (busHandle: File, slaveAddr: int) =
   ## Set up the i2c bus to connect to a specific client
 
   if ioctl(getFileHandle(busHandle), I2C_SLAVE, uint(slaveAddr)) != 0:
@@ -69,7 +69,7 @@ proc setMemoryAddress (deviceHandle: File, memoryAddress: byte) =
   #end
 #end
 
-proc putBytes* (deviceHandle: File, slaveAddr: byte, memoryAddress: byte, data: openArray[byte]): int =
+proc putBytes* (deviceHandle: File, slaveAddr: int, memoryAddress: byte, data: openArray[byte]): int =
   ## Set the memory location to be read from, and read the data.
 
   var dataPlusAddress: seq [byte]
@@ -88,7 +88,7 @@ proc putBytes* (deviceHandle: File, slaveAddr: byte, memoryAddress: byte, data: 
   #end
 #end
 
-proc getBytes* (deviceHandle: File, slaveAddr: byte, memoryAddress: byte, data: var openArray[byte], length: int): int =
+proc getBytes* (deviceHandle: File, slaveAddr: int, memoryAddress: byte, data: var openArray[byte], length: int): int =
   ## Read bytes from the device at the specified address.
 
   setSlaveAddress(deviceHandle, slaveAddr)
