@@ -69,7 +69,7 @@ proc setMemoryAddress (deviceHandle: File, memoryAddress: byte) =
   #end
 #end
 
-proc putBytes* (deviceHandle: File, slaveAddr: int, memoryAddress: byte, data: openArray[byte]): int =
+proc putBytes* (deviceHandle: File, slaveAddr: int = 0, force: bool = false, memoryAddress: byte, data: openArray[byte]): int =
   ## Set the memory location to be read from, and read the data.
 
   var dataPlusAddress: seq [byte]
