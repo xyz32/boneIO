@@ -6,8 +6,9 @@ The implementation is using the sysfs to "talk" to the hardware.
 The library is licensed under the MIT license.
 
 ## Install
-NOTE: This librari is not yet part of the default nimble repository, therefore a manual instalation is needed:
-Cd into the root of the project and run:
+The library is part of the nimble repository. Use it as you would use any other library.
+
+If you want to install it yourself: cd into the root of the project and run:
 ```
 nimble install
 ```
