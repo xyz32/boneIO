@@ -12,7 +12,7 @@ Title=Release
 Arguments=build
 Enabled=true
 Environment=
-Executable=nimble
+Executable=file:nimble
 Type=0
 
 [CustomBuildSystem][BuildConfig0][ToolClean]
