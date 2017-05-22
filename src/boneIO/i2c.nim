@@ -15,7 +15,7 @@
 # 
 # http://elinux.org/Interfacing_with_I2C_Devices#Beagleboard_I2C2_Enable
 
-import bone, bone/cape, strutils, os, posix
+import boneIO, boneIO/cape, strutils, os, posix
 
 const
   i2cDevFile = "/dev/i2c-$1"

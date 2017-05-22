@@ -2,8 +2,8 @@ nimcache/
 
 bonegpio
 
-# .kdev4/
-# *.kdev4
+.kdev4/
+#*.kdev4
 
 # Swap Files #
 .*.kate-swp

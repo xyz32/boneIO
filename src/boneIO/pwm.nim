@@ -25,7 +25,7 @@
 #
 
 #http://elinux.org/EBC_Exercise_13_Pulse_Width_Modulation
-import bone, bone/cape, strutils, os
+import boneIO, boneIO/cape, strutils, os
 
 const
   capeName = "am33xx_pwm"
@@ -44,7 +44,7 @@ proc setFreqHz* (pin: string, freqHz: int) =
 
 proc pinModePWM* (pin: string) =
   ## Set the Pin in PWM mode
-  if bone.hasPWM(pin):
+  if boneIO.hasPWM(pin):
     cape.enable(capeName) #Make sure the pwm controller is enabled
     cape.waitForCape(capeName)
     

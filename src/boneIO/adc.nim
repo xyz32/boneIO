@@ -23,40 +23,25 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 #
 #
+import boneIO, os, boneIO/cape, strutils
 
-import bone/pwm
+const
+  capeName = "cape-bone-iio"
+  adcPinFile = "/sys/devices/ocp.?/helper.??/AIN$1"
 
-type
-  Servo = object
-    minDuty: float
-    maxDuty: float
-    freqHz: int32
-    pinName: string
+proc pinModeADC* (pin: string) =
+  ## Enable the ADC mode for the pin
+  
+  if boneIO.hasADC(pin):
+    cape.enable(capeName) #Make sure the pwm controller is enabled
+  else:
+    raise newException(ValueError, "Pin '" & pin & "' does not support ADC")
   #end
-
-proc positionToDuty(servo: Servo, position: float): float =
-  result = (servo.maxDuty - servo.minDuty) * position
 #end
 
-proc build* (pin: string, minDuty: float = 0.0375, maxDuty: float = 0.1125, freqHz: int32 = 50): Servo =
-  ## Creates a new servo object with most common values.
-  ##
-  ## All "Duty" related parameters are in percentage
-  result.minDuty = minDuty
-  result.maxDuty = maxDuty
-  result.freqHz = freqHz
-  result.pinName = pin
-  pwm.pinModePWM(result.pinName, result.freqHz)
-  pwm.analogWrite(result.pinName, (result.minDuty + result.maxDuty)/2)
-#end
-
-proc move* (servo: Servo, position: float) =
-  ## Command the servo to move.
-  ##
-  ## Position is a percentage relative to the maximum range of muvment (maxDuty - minDuty).
-  if position < 0 or position > 1:
-    raise newException(ValueError, "Duty is a percentage value between [0..1]. Got " & $position)
-  #end
-
-  pwm.analogWrite(servo.pinName, positionToDuty(servo, position))
+proc analogRead* (pin: string): int =
+  ## Read analogic data form ADC pin.
+  
+  let adcNo = boneIO.getPinData(pin).ain
+  result = parseInt(strip(cape.readFile(adcPinFile % [$adcNo]), true, true))
 #end

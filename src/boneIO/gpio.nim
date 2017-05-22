@@ -24,7 +24,7 @@
 #
 #
 
-import bone, os, strutils
+import boneIO, os, strutils
 
 type
   ## Pin direction, in or out
@@ -75,11 +75,11 @@ proc pinMode* (pin: string, direction: Direction, pullup: PullUpDown = PullUpDow
   ## Set the pin mod
 
   # LEDs need to be treated differently
-  if bone.hasLED(pin):
-    let pinLed = $bone.getPinData(pin).led
+  if boneIO.hasLED(pin):
+    let pinLed = $boneIO.getPinData(pin).led
     writeFile(ledTriggerFile % [pinLed], "gpio")
   else:
-    let pinGpio = $bone.getPinData(pin).gpio;
+    let pinGpio = $boneIO.getPinData(pin).gpio;
     exportPin(pinGpio)
     setPinDirection(pinGpio, direction)
   #end
@@ -88,42 +88,42 @@ proc pinMode* (pin: string, direction: Direction, pullup: PullUpDown = PullUpDow
 proc pinModeReset* (pin: string) =
   ## Reset the pin mode
 
-  exportPin($bone.getPinData(pin).gpio, false)
+  exportPin($boneIO.getPinData(pin).gpio, false)
 #end
 
 proc digitalWrite* (pin: string, value: int) =
-  if bone.hasLED(pin):
-    let pinLed = $bone.getPinData(pin).led
+  if boneIO.hasLED(pin):
+    let pinLed = $boneIO.getPinData(pin).led
     writeFile(ledBrightnessFile % [pinLed], $value)
   else:
-    let pinGpio = $bone.getPinData(pin).gpio
+    let pinGpio = $boneIO.getPinData(pin).gpio
     writeFile(gpioValueFile % [pinGpio], $value)
   #end
 #end
 
 proc digitalRead* (pin: string): int =
-  if bone.hasLED(pin):
-    let pinLed = $bone.getPinData(pin).led
+  if boneIO.hasLED(pin):
+    let pinLed = $boneIO.getPinData(pin).led
     result = int(parseInt(readFile(ledBrightnessFile % [pinLed])))
   else:
-    let pinGpio = $bone.getPinData(pin).gpio
+    let pinGpio = $boneIO.getPinData(pin).gpio
     result = int(parseInt(readFile(gpioValueFile % [pinGpio])))
   #end
 #end
 
 # Testing
 when isMainModule:
-  assert(bone.getPinData("P8_3").key == "P8_3")
+  assert(boneIO.getPinData("P8_3").key == "P8_3")
   try:
-    discard bone.getPinData("bla").key
+    discard boneIO.getPinData("bla").key
   except ValueError:
     assert (true)
   #end
 
-  assert ($bone.getPinData("P9_42").eeprom == "4")
+  assert ($boneIO.getPinData("P9_42").eeprom == "4")
 
   try:
-    discard bone.getPinData("P9_46").gpio
+    discard boneIO.getPinData("P9_46").gpio
   except ValueError:
     assert (true)
   #end

@@ -1,5 +1,5 @@
 [Project]
-Name=boneGPIO
+Name=boneIO
 Manager=KDevCustomBuildSystem
 VersionControl=
 
@@ -11,10 +11,10 @@ BuildDir=
 Title=Release
 
 [CustomBuildSystem][BuildConfig0][ToolBuild]
-Arguments=build
+Arguments=build -y
 Enabled=true
 Environment=
-Executable=nimble
+Executable=file:nimble
 Type=0
 
 [CustomBuildSystem][BuildConfig0][ToolClean]
@@ -28,14 +28,14 @@ Type=3
 Arguments=init
 Enabled=true
 Environment=
-Executable=minble
+Executable=file:minble
 Type=1
 
 [CustomBuildSystem][BuildConfig0][ToolInstall]
-Arguments=install
+Arguments=install -y
 Enabled=true
 Environment=
-Executable=nimble
+Executable=file:nimble
 Type=2
 
 [CustomBuildSystem][BuildConfig0][ToolPrune]
